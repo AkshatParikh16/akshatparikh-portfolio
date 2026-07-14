@@ -32,8 +32,8 @@
   /* Resume page iframe */
   if (currentPage === 'resume') {
     var resumeFrame = document.getElementById('resumeFrame');
-    if (resumeFrame) {
-      resumeFrame.src = 'resume.pdf#toolbar=1&navpanes=0&view=FitH';
+    if (resumeFrame && !resumeFrame.getAttribute('src')) {
+      resumeFrame.src = 'resume-document.html';
     }
   }
 
