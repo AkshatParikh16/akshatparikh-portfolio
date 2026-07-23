@@ -32,10 +32,14 @@
   <main>
     <section id="projects">
       <h2 class="section-heading caps reveal">Projects</h2>
+      <div class="project-filters reveal" role="tablist" aria-label="Project categories">
+        <button type="button" class="project-filter active" role="tab" aria-selected="true" data-filter="ml-ds-genai">ML, DS, and GenAI</button>
+        <button type="button" class="project-filter" role="tab" aria-selected="false" data-filter="de-analytics">Data Engineering and Analytics</button>
+        <button type="button" class="project-filter" role="tab" aria-selected="false" data-filter="agentic">Agentic AI</button>
+      </div>
       <div class="projects-stack">
 
-        <div class="project-category reveal">
-          <h3 class="project-category-title">ML, DS, and GenAI</h3>
+        <div class="project-category reveal is-active" data-project-category="ml-ds-genai">
 
           <article class="card-box reveal">
             <div class="project-header">
@@ -103,8 +107,7 @@
           </article>
         </div>
 
-        <div class="project-category reveal">
-          <h3 class="project-category-title">Data Engineering and Analytics</h3>
+        <div class="project-category reveal" data-project-category="de-analytics">
 
           <article class="card-box reveal">
             <div class="project-header">
@@ -172,8 +175,7 @@
           </article>
         </div>
 
-        <div class="project-category reveal">
-          <h3 class="project-category-title">Agentic AI</h3>
+        <div class="project-category reveal" data-project-category="agentic">
 
           <article class="card-box reveal">
             <div class="project-header">

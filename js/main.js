@@ -37,6 +37,30 @@
     }
   }
 
+  /* Project category tabs */
+  if (currentPage === 'projects') {
+    var projectFilters = document.querySelectorAll('.project-filter');
+    var projectCategories = document.querySelectorAll('[data-project-category]');
+    function activateProjectFilter(filterId) {
+      projectFilters.forEach(function(btn) {
+        var isActive = btn.getAttribute('data-filter') === filterId;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      projectCategories.forEach(function(panel) {
+        panel.classList.toggle('is-active', panel.getAttribute('data-project-category') === filterId);
+      });
+    }
+    projectFilters.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        activateProjectFilter(btn.getAttribute('data-filter'));
+      });
+    });
+    if (projectFilters.length) {
+      activateProjectFilter(document.querySelector('.project-filter.active')?.getAttribute('data-filter') || 'ml-ds-genai');
+    }
+  }
+
   /* Toast */
   var toast = document.getElementById('toast');
   var toastTimer;
