@@ -379,6 +379,13 @@
 
     .projects-stack { display: flex; flex-direction: column; gap: 1rem; }
 
+    .project-category { display: flex; flex-direction: column; gap: 1rem; }
+    .project-category + .project-category { margin-top: 1.75rem; }
+    .project-category-title {
+      font-size: 0.82rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--accent); margin: 0 0 0.15rem;
+    }
+
     /* Publications */
     .pub-full { display: flex; flex-direction: column; gap: 1rem; }
     .pub-venue { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.75rem; }
