@@ -1,0 +1,24 @@
+# Recruiter keyword regression — run: node scripts/test-chat-matcher.js
+
+## One-word / short prompts
+Call? | phone | (408) 637-9861
+Email? | email | akshat.sparikh@gmail.com
+LinkedIn? | linkedin | linkedin.com/in/akshatp2002
+GitHub? | github | github.com/AkshatParikh16
+Location? | location | San Jose
+Contact? | contact | akshat.sparikh@gmail.com
+Visa? | sponsorship | sponsorship
+Sponsorship? | sponsorship | sponsorship
+Authorized? | work_authorization | authorized to work
+Salary? | salary | depends on the role
+Remote? | remote_hybrid | flexible
+References? | references | David Powers
+Start? | availability | immediately
+Resume? | resume | resume
+Experience? | experience_overview | four roles
+
+## Natural phrasing
+Does the company need to sponsor his visa? | sponsorship
+Can he legally work in the United States? | work_authorization
+What kind of pay is he looking for? | salary
+Tell me about his dog | fallback

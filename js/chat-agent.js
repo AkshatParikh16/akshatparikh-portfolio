@@ -21,6 +21,56 @@
     'remote', 'hybrid', 'relocate', 'start', 'availability', 'churn', 'langgraph', 'aws', 'azure'
   ];
 
+  function matchesExactToken(normalized, words, token) {
+    var t = normalize(token);
+    if (!t) return false;
+    if (normalized === t) return true;
+    if (words.length === 1 && words[0] === t) return true;
+    if (words.length === 2 && words.join(' ') === t) return true;
+    return false;
+  }
+
+  function routeByRecruiterIntent(normalized) {
+    var words = meaningfulWords(normalized);
+    var i, j, intent, entry, pattern, waScore, score;
+
+    if (!recruiterIntents || !recruiterIntents.length) return null;
+
+    for (i = 0; i < recruiterIntents.length; i++) {
+      intent = recruiterIntents[i];
+      entry = entryMap && entryMap[intent.id] ? entryMap[intent.id] : null;
+      if (!entry) continue;
+
+      if (intent.exact) {
+        for (j = 0; j < intent.exact.length; j++) {
+          if (matchesExactToken(normalized, words, intent.exact[j])) {
+            if (intent.id === 'intro' && !isIntroQuestion(normalized)) continue;
+            if (intent.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) continue;
+            return entry;
+          }
+        }
+      }
+
+      if (intent.patterns) {
+        for (j = intent.patterns.length - 1; j >= 0; j--) {
+          pattern = normalize(intent.patterns[j]);
+          if (pattern && normalized.indexOf(pattern) !== -1) {
+            if (intent.id === 'intro' && !isIntroQuestion(normalized)) continue;
+            if (intent.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) continue;
+            if (intent.id === 'work_authorization' && mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) continue;
+            return entry;
+          }
+        }
+      }
+    }
+
+    if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1 && entryMap.sponsorship) {
+      return entryMap.sponsorship;
+    }
+
+    return null;
+  }
+
   function isPhoneQuestion(normalized) {
     if (normalized === 'call' || normalized === 'phone') return true;
     var signals = ['phone number', 'can i call', 'call him', 'give me a call', 'ring him', 'telephone', 'mobile number', 'what is his number', 'what s his number', 'contact number'];
@@ -71,6 +121,7 @@
   var knowledge = null;
   var entryMap = null;
   var semanticTopics = null;
+  var recruiterIntents = null;
 
   function normalize(text) {
     return String(text || '')
@@ -135,7 +186,12 @@
 
   function formatJackAnswer(text, entry) {
     var answer = String(text || '').trim();
+    var style;
     if (!answer) return FALLBACK;
+    style = entry && entry.answerStyle ? entry.answerStyle : 'detail';
+    if (style === 'yesno' && answer.indexOf('Yes') !== 0 && answer.indexOf('No') !== 0 && answer.indexOf('Sure') !== 0) {
+      answer = 'Sure — ' + answer.charAt(0).toLowerCase() + answer.slice(1);
+    }
     if (entry && entry.id === 'intro' && answer.indexOf('Ask me about') !== -1) {
       answer = answer.replace('Ask me about any specific area and I\'ll go deeper!', 'Want specifics? Ask about experience, projects, or skills.');
     }
@@ -264,8 +320,17 @@
     }
 
     if (bestId === 'intro' && !isIntroQuestion(normalized)) return null;
+    if (bestId === 'contact' && entryMap.email && scoreSemanticTopic(normalized, semanticTopics.email || {}) >= MIN_SEMANTIC_SCORE) {
+      return entryMap.email;
+    }
     if (bestId === 'contact' && isPhoneQuestion(normalized) && entryMap.phone) {
       return entryMap.phone;
+    }
+    if (bestId === 'contact' && entryMap.linkedin && scoreSemanticTopic(normalized, semanticTopics.linkedin || {}) >= MIN_SEMANTIC_SCORE) {
+      return entryMap.linkedin;
+    }
+    if (bestId === 'contact' && entryMap.location && scoreSemanticTopic(normalized, semanticTopics.location || {}) >= MIN_SEMANTIC_SCORE) {
+      return entryMap.location;
     }
     if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
       bestId = 'remote_hybrid';
@@ -287,13 +352,10 @@
   }
 
   function routeByIntent(normalized) {
+    var routed = routeByRecruiterIntent(normalized);
+    if (routed) return routed;
+
     var i, j, route, pattern;
-    if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
-      if (entryMap && entryMap.sponsorship) return entryMap.sponsorship;
-    }
-    if (isPhoneQuestion(normalized) && entryMap && entryMap.phone) {
-      return entryMap.phone;
-    }
     for (i = 0; i < INTENT_ROUTES.length; i++) {
       route = INTENT_ROUTES[i];
       for (j = route.patterns.length - 1; j >= 0; j--) {
@@ -427,6 +489,9 @@
         knowledge = data;
         entryMap = buildEntryMap(data);
         semanticTopics = data.semanticTopics || null;
+        recruiterIntents = (data.recruiterIntents || []).slice().sort(function(a, b) {
+          return (b.priority || 0) - (a.priority || 0);
+        });
       })
       .catch(function() {
         knowledge = {

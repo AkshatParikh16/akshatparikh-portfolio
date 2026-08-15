@@ -1,4 +1,24 @@
 {
+  "recruiterIntents": [
+    { "id": "sponsorship", "priority": 14, "exact": ["sponsorship", "sponsor", "visa", "h1b", "immigration"], "patterns": ["require sponsorship", "need sponsorship", "visa sponsorship", "need visa", "require visa", "need sponsor", "company sponsor"] },
+    { "id": "work_authorization", "priority": 13, "exact": ["authorized", "authorization", "eligible"], "patterns": ["allowed to work", "authorized to work", "eligible to work", "work authorization", "work in usa", "work in us", "legally authorized", "right to work"] },
+    { "id": "phone", "priority": 13, "exact": ["call", "phone", "number", "mobile", "cell", "telephone"], "patterns": ["phone number", "can i call", "call him", "ring him", "what is his number", "contact number"] },
+    { "id": "email", "priority": 13, "exact": ["email", "mail"], "patterns": ["email address", "what is his email", "email him", "his email", "send email"] },
+    { "id": "linkedin", "priority": 13, "exact": ["linkedin"], "patterns": ["linkedin profile", "linkedin url", "his linkedin"] },
+    { "id": "github", "priority": 13, "exact": ["github"], "patterns": ["github profile", "github url", "his github", "code portfolio"] },
+    { "id": "location", "priority": 13, "exact": ["location", "address", "based"], "patterns": ["where is he", "where located", "where is he based", "where is he located", "san jose", "which city"] },
+    { "id": "salary", "priority": 12, "exact": ["salary", "compensation", "pay"], "patterns": ["pay rate", "how much", "salary expectation", "salary expectations", "talk numbers", "compensation range"] },
+    { "id": "availability", "priority": 12, "exact": ["availability", "start"], "patterns": ["start date", "when can he start", "how soon", "available to start", "join date", "notice period"] },
+    { "id": "references", "priority": 12, "exact": ["references", "reference"], "patterns": ["professional reference", "professional references", "who can vouch", "past manager", "provide references"] },
+    { "id": "remote_hybrid", "priority": 12, "exact": ["remote", "hybrid", "wfh", "onsite"], "patterns": ["work from home", "working from home", "in office", "on-site", "work schedule"] },
+    { "id": "relocation", "priority": 12, "exact": ["relocation", "relocate"], "patterns": ["willing to relocate", "open to relocation", "willing to move", "relocate for work"] },
+    { "id": "resume", "priority": 12, "exact": ["resume", "cv"], "patterns": ["download resume", "view resume", "curriculum vitae", "see his cv"] },
+    { "id": "experience_overview", "priority": 11, "exact": ["experience"], "patterns": ["work experience", "job history", "where did he work", "employment history", "past roles"] },
+    { "id": "skills", "priority": 11, "exact": ["skills"], "patterns": ["tech stack", "programming languages", "what technologies", "technical skills"] },
+    { "id": "education", "priority": 11, "exact": ["education"], "patterns": ["where did he study", "what degree", "his gpa", "university"] },
+    { "id": "contact", "priority": 10, "exact": ["contact", "reach"], "patterns": ["get in touch", "reach out", "reach him", "contact him", "how to contact"] },
+    { "id": "intro", "priority": 9, "exact": [], "patterns": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "tell me about him", "candidate background"] }
+  ],
   "semanticTopics": {
     "sponsorship": {
       "terms": ["sponsorship", "sponsor", "visa", "h1b", "h-1b", "immigration", "petition", "tn visa", "work visa", "employer sponsor", "company sponsor"],
@@ -17,6 +37,22 @@
         "can he work", "can she work", "legally authorized", "permitted to work",
         "right to work in", "work authorization status", "employment eligibility"
       ]
+    },
+    "linkedin": {
+      "terms": ["linkedin", "linkedin profile"],
+      "paraphrases": ["linkedin url", "his linkedin", "linkedin page"]
+    },
+    "github": {
+      "terms": ["github", "github profile", "code"],
+      "paraphrases": ["github url", "his github", "code portfolio"]
+    },
+    "location": {
+      "terms": ["location", "address", "based", "city", "san jose", "bay area"],
+      "paraphrases": ["where is he", "where located", "where is he based", "which city"]
+    },
+    "email": {
+      "terms": ["email", "mail", "inbox"],
+      "paraphrases": ["email address", "what is his email", "email him", "his email", "send email"]
     },
     "contact": {
       "terms": ["contact", "email", "linkedin", "github", "reach", "connect", "location", "address"],
@@ -126,6 +162,7 @@
     {
       "id": "sponsorship",
       "priority": 12,
+      "answerStyle": "contact",
       "keywords": ["sponsorship", "sponsor", "spnorship", "sponsership", "visa", "h1b", "need visa", "require visa"],
       "phrases": ["require sponsorship", "need sponsorship", "visa sponsorship", "need sponsor", "require sponsor", "require spnorship"],
       "text": "sponsorship visa sponsor H1B",
@@ -134,6 +171,7 @@
     {
       "id": "work_authorization",
       "priority": 11,
+      "answerStyle": "yesno",
       "keywords": ["authorized", "authorization", "eligible", "citizen", "green card", "opt", "cpt", "legally", "permitted", "usa", "united states", "america", "allowed"],
       "phrases": ["allowed to work", "authorized to work", "eligible to work", "work authorization", "work in usa", "work in us", "work in america", "legally authorized"],
       "text": "work authorization authorized United States eligible legally allowed USA",
@@ -142,22 +180,61 @@
     {
       "id": "phone",
       "priority": 11,
+      "answerStyle": "direct",
       "keywords": ["phone", "call", "telephone", "mobile", "cell", "number", "dial", "ring"],
       "phrases": ["phone number", "can i call", "call him", "give me a call", "what is his number", "contact number"],
       "text": "phone call telephone mobile number dial reach by phone",
       "answer": "Sure — you can call Akshat at (408) 637-9861."
     },
     {
+      "id": "email",
+      "priority": 11,
+      "answerStyle": "direct",
+      "keywords": ["email", "mail", "inbox", "gmail"],
+      "phrases": ["email address", "what is his email", "email him", "his email", "send email"],
+      "text": "email mail akshat.sparikh@gmail.com contact inbox",
+      "answer": "Sure — email him at akshat.sparikh@gmail.com."
+    },
+    {
+      "id": "linkedin",
+      "priority": 11,
+      "answerStyle": "direct",
+      "keywords": ["linkedin", "linkedin profile"],
+      "phrases": ["linkedin url", "his linkedin", "linkedin page"],
+      "text": "linkedin profile linkedin.com/in/akshatp2002",
+      "answer": "Here's his LinkedIn: linkedin.com/in/akshatp2002"
+    },
+    {
+      "id": "github",
+      "priority": 11,
+      "answerStyle": "direct",
+      "keywords": ["github", "github profile", "code", "repository"],
+      "phrases": ["github url", "his github", "code portfolio"],
+      "text": "github profile github.com/AkshatParikh16 repositories code",
+      "answer": "Here's his GitHub: github.com/AkshatParikh16"
+    },
+    {
+      "id": "location",
+      "priority": 11,
+      "answerStyle": "direct",
+      "keywords": ["location", "address", "based", "city", "san jose", "bay area"],
+      "phrases": ["where is he", "where located", "where is he based", "which city"],
+      "text": "location San Jose California Bay Area based address",
+      "answer": "He's based in San Jose, CA (Bay Area)."
+    },
+    {
       "id": "contact",
       "priority": 10,
-      "keywords": ["contact", "email", "reach", "linkedin", "github", "connect", "location", "address", "san jose"],
-      "phrases": ["get in touch", "reach him", "contact him", "email address", "how to contact"],
-      "text": "contact email phone reach linkedin github location San Jose California",
-      "answer": "Happy to help — you can reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He's based in San Jose, CA.\n\nLinkedIn: linkedin.com/in/akshatp2002 · GitHub: github.com/AkshatParikh16"
+      "answerStyle": "contact",
+      "keywords": ["contact", "reach", "connect", "touch"],
+      "phrases": ["get in touch", "reach him", "contact him", "how to contact", "reach out"],
+      "text": "contact reach connect touch hiring recruiter",
+      "answer": "Here's how to reach Akshat:\n\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861\n• LinkedIn: linkedin.com/in/akshatp2002\n• GitHub: github.com/AkshatParikh16\n• Location: San Jose, CA"
     },
     {
       "id": "salary",
       "priority": 10,
+      "answerStyle": "contact",
       "keywords": ["salary", "compensation", "pay", "rate", "expectations", "offer", "package", "how much"],
       "phrases": ["salary expectation", "salary expectations", "pay expectation", "compensation expectation"],
       "text": "salary compensation expectations role responsibilities",
@@ -166,6 +243,7 @@
     {
       "id": "availability",
       "priority": 10,
+      "answerStyle": "yesno",
       "keywords": ["start", "availability", "available", "notice", "join", "immediately", "when"],
       "phrases": ["start date", "when can he start", "when can start", "how soon can he start", "available to start"],
       "text": "availability start date immediately available May 2026 graduate ready",
@@ -190,6 +268,7 @@
     {
       "id": "references",
       "priority": 10,
+      "answerStyle": "list",
       "keywords": ["reference", "references", "referee", "supervisor", "recommendation", "recommend"],
       "phrases": ["professional reference", "professional references", "who can i contact"],
       "text": "references David Powers Christopher Templeton Christian Barnhill UTA supervisor",

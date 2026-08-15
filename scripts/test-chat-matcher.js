@@ -54,6 +54,7 @@ const MIN_SEMANTIC_SCORE = 4;
 const entryMap = {};
 knowledge.entries.forEach((e) => { entryMap[e.id] = e; });
 const semanticTopics = knowledge.semanticTopics || null;
+const recruiterIntents = (knowledge.recruiterIntents || []).slice().sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
 function normalize(text) {
   return String(text || '').toLowerCase().replace(/[^\w\s@.+-]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -84,6 +85,47 @@ function fuzzyWordMatch(word, target, maxDist) {
     if (levenshtein(word, target) <= maxDist) return true;
   }
   return false;
+}
+
+function matchesExactToken(normalized, words, token) {
+  const t = normalize(token);
+  if (!t) return false;
+  if (normalized === t) return true;
+  if (words.length === 1 && words[0] === t) return true;
+  if (words.length === 2 && words.join(' ') === t) return true;
+  return false;
+}
+
+function routeByRecruiterIntent(normalized) {
+  const words = meaningfulWords(normalized);
+  for (const intent of recruiterIntents) {
+    const entry = entryMap[intent.id];
+    if (!entry) continue;
+    if (intent.exact) {
+      for (const token of intent.exact) {
+        if (matchesExactToken(normalized, words, token)) {
+          if (intent.id === 'intro' && !isIntroQuestion(normalized)) continue;
+          if (intent.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) continue;
+          return entry;
+        }
+      }
+    }
+    if (intent.patterns) {
+      for (let j = intent.patterns.length - 1; j >= 0; j--) {
+        const pattern = normalize(intent.patterns[j]);
+        if (pattern && normalized.indexOf(pattern) !== -1) {
+          if (intent.id === 'intro' && !isIntroQuestion(normalized)) continue;
+          if (intent.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) continue;
+          if (intent.id === 'work_authorization' && mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) continue;
+          return entry;
+        }
+      }
+    }
+  }
+  if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1 && entryMap.sponsorship) {
+    return entryMap.sponsorship;
+  }
+  return null;
 }
 
 function isPhoneQuestion(normalized) {
@@ -198,10 +240,8 @@ function semanticEntryBoost(normalized, entry) {
 }
 
 function routeByIntent(normalized) {
-  if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
-    if (entryMap.sponsorship) return entryMap.sponsorship;
-  }
-  if (isPhoneQuestion(normalized) && entryMap.phone) return entryMap.phone;
+  const recruiter = routeByRecruiterIntent(normalized);
+  if (recruiter) return recruiter;
   for (const route of INTENT_ROUTES) {
     for (let j = route.patterns.length - 1; j >= 0; j--) {
       const pattern = route.patterns[j];
@@ -286,13 +326,26 @@ function findAnswer(question) {
 }
 
 const tests = [
+  { q: 'Call?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
+  { q: 'Email?', expectId: 'email', expectSnippet: 'akshat.sparikh@gmail.com' },
+  { q: 'LinkedIn?', expectId: 'linkedin', expectSnippet: 'linkedin.com/in/akshatp2002' },
+  { q: 'GitHub?', expectId: 'github', expectSnippet: 'github.com/AkshatParikh16' },
+  { q: 'Location?', expectId: 'location', expectSnippet: 'San Jose' },
+  { q: 'Contact?', expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
+  { q: 'Visa?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
+  { q: 'Authorized?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
+  { q: 'Salary?', expectId: 'salary', expectSnippet: 'depends on the role' },
+  { q: 'Remote?', expectId: 'remote_hybrid', expectSnippet: 'flexible' },
+  { q: 'References?', expectId: 'references', expectSnippet: 'David Powers' },
+  { q: 'Start?', expectId: 'availability', expectSnippet: 'immediately' },
+  { q: 'Resume?', expectId: 'resume', expectSnippet: 'resume' },
+  { q: 'Experience?', expectId: 'experience_overview', expectSnippet: 'four roles' },
   { q: 'Will akshat require sponsorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'will akshat require spnorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Does the company need to sponsor his visa?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Is akshat allowed to work in the USA?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: 'Can he legally work in the United States?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
-  { q: "What is Akshat's email?", expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
-  { q: 'Call?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
+  { q: "What is Akshat's email?", expectId: 'email', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'Can I call him?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
   { q: 'How do I reach out to him?', expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'When can he start?', expectId: 'availability', expectSnippet: 'immediately' },
