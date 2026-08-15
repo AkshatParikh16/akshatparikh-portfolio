@@ -47,9 +47,11 @@ const STOP_WORDS = {
   no: 1, yes: 1, tell: 1, please: 1, give: 1, know: 1, get: 1, got: 1
 };
 const MIN_SCORE = 2;
+const MIN_SEMANTIC_SCORE = 4;
 
 const entryMap = {};
 knowledge.entries.forEach((e) => { entryMap[e.id] = e; });
+const semanticTopics = knowledge.semanticTopics || null;
 
 function normalize(text) {
   return String(text || '').toLowerCase().replace(/[^\w\s@.+-]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -99,6 +101,70 @@ function hasTopicSignal(normalized) {
   return TOPIC_SIGNALS.some((word) => normalized.indexOf(word) !== -1);
 }
 
+function scoreSemanticTopic(normalized, config) {
+  let score = 0;
+  const words = normalized.split(' ');
+  (config.paraphrases || []).forEach((p) => {
+    const phrase = normalize(p);
+    if (phrase && normalized.indexOf(phrase) !== -1) score += 6;
+  });
+  (config.terms || []).forEach((term) => {
+    const t = normalize(term);
+    if (!t) return;
+    if (normalized.indexOf(t) !== -1) {
+      score += t.includes(' ') ? 4 : 3;
+      return;
+    }
+    words.forEach((w) => {
+      if (fuzzyWordMatch(w, t, 2)) score += 2;
+    });
+  });
+  (config.concepts || []).forEach((concept) => {
+    const t = normalize(concept);
+    if (t && normalized.indexOf(t) !== -1) score += 3;
+  });
+  return score;
+}
+
+function routeBySemantic(normalized) {
+  if (!semanticTopics) return null;
+  let bestId = null;
+  let bestScore = 0;
+  let secondScore = 0;
+  for (const id of Object.keys(semanticTopics)) {
+    const score = scoreSemanticTopic(normalized, semanticTopics[id]);
+    if (score > bestScore) {
+      secondScore = bestScore;
+      bestScore = score;
+      bestId = id;
+    } else if (score > secondScore) {
+      secondScore = score;
+    }
+  }
+  if (!bestId || bestScore < MIN_SEMANTIC_SCORE) return null;
+  if (bestId === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) {
+    const waScore = scoreSemanticTopic(normalized, semanticTopics.work_authorization || {});
+    if (waScore >= bestScore - 1) bestId = 'work_authorization';
+  }
+  if (bestId === 'intro' && hasTopicSignal(normalized)) return null;
+  if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
+    bestId = 'remote_hybrid';
+  }
+  if (bestScore < secondScore + 1 && secondScore >= MIN_SEMANTIC_SCORE) return null;
+  return entryMap[bestId] || null;
+}
+
+function semanticEntryBoost(normalized, entry) {
+  let score = 0;
+  if (!semanticTopics) return 0;
+  const config = semanticTopics[entry.id];
+  if (config) score += scoreSemanticTopic(normalized, config);
+  (entry.concepts || []).forEach((concept) => {
+    if (normalized.indexOf(normalize(concept)) !== -1) score += 3;
+  });
+  return score;
+}
+
 function routeByIntent(normalized) {
   if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
     if (entryMap.sponsorship) return entryMap.sponsorship;
@@ -132,6 +198,7 @@ function scoreEntry(tokens, normalizedQuestion, entry) {
   (entry.phrases || []).forEach((phrase) => {
     if (normalizedQuestion.indexOf(normalize(phrase)) !== -1) score += 4;
   });
+  score += semanticEntryBoost(normalizedQuestion, entry);
   return score;
 }
 
@@ -139,7 +206,9 @@ function findAnswer(question) {
   const trimmed = String(question || '').trim();
   if (!trimmed) return { id: null, answer: '' };
   const normalized = normalize(trimmed);
-  const routed = routeByIntent(normalized);
+  let routed = routeByIntent(normalized);
+  if (routed && routed.answer) return { id: routed.id, answer: routed.answer };
+  routed = routeBySemantic(normalized);
   if (routed && routed.answer) return { id: routed.id, answer: routed.answer };
   const tokens = tokenize(trimmed);
   let best = null;
@@ -161,13 +230,21 @@ function findAnswer(question) {
 const tests = [
   { q: 'Will akshat require sponsorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'will akshat require spnorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
+  { q: 'Does the company need to sponsor his visa?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Is akshat allowed to work in the USA?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
+  { q: 'Can he legally work in the United States?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: "What is Akshat's email?", expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
+  { q: 'How do I reach out to him?', expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'When can he start?', expectId: 'availability', expectSnippet: 'immediately' },
+  { q: 'How soon can he join the team?', expectId: 'availability', expectSnippet: 'immediately' },
   { q: 'Can you provide references?', expectId: 'references', expectSnippet: 'David Powers' },
+  { q: 'Who can vouch for him professionally?', expectId: 'references', expectSnippet: 'David Powers' },
   { q: 'Tell me about InspectAI', expectId: 'projects_inspectai', expectSnippet: 'InspectAI' },
   { q: 'What are his salary expectations?', expectId: 'salary', expectSnippet: 'depends on the role' },
-  { q: 'What is the weather in Tokyo?', expectId: 'fallback', expectSnippet: "not sure about that one" },
+  { q: 'What kind of pay is he looking for?', expectId: 'salary', expectSnippet: 'depends on the role' },
+  { q: 'Is he open to working from home?', expectId: 'remote_hybrid', expectSnippet: 'flexible' },
+  { q: 'Would he relocate for the right role?', expectId: 'relocation', expectSnippet: 'open to relocation' },
+  { q: 'What is the weather in Tokyo?', expectId: 'fallback', expectSnippet: 'not sure about that one' },
   { q: 'Who is Akshat?', expectId: 'intro', expectSnippet: 'MS graduate' }
 ];
 
@@ -191,7 +268,6 @@ for (const t of tests) {
   }
 }
 
-// Verify intro keywords don't include akshat/parikh
 const intro = entryMap.intro;
 const introKw = (intro.keywords || []).map((k) => k.toLowerCase());
 if (introKw.includes('akshat') || introKw.includes('parikh')) {

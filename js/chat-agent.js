@@ -55,8 +55,10 @@
   };
 
   var MIN_SCORE = 2;
+  var MIN_SEMANTIC_SCORE = 4;
   var knowledge = null;
   var entryMap = null;
+  var semanticTopics = null;
 
   function normalize(text) {
     return String(text || '')
@@ -119,6 +121,84 @@
     });
   }
 
+  function scoreSemanticTopic(normalized, config) {
+    var score = 0;
+    var words = normalized.split(' ');
+    var i, j, phrase, term, t, w;
+
+    (config.paraphrases || []).forEach(function(p) {
+      phrase = normalize(p);
+      if (phrase && normalized.indexOf(phrase) !== -1) score += 6;
+    });
+
+    (config.terms || []).forEach(function(term) {
+      t = normalize(term);
+      if (!t) return;
+      if (normalized.indexOf(t) !== -1) {
+        score += t.indexOf(' ') !== -1 ? 4 : 3;
+        return;
+      }
+      for (i = 0; i < words.length; i++) {
+        if (fuzzyWordMatch(words[i], t, 2)) score += 2;
+      }
+    });
+
+    (config.concepts || []).forEach(function(concept) {
+      t = normalize(concept);
+      if (t && normalized.indexOf(t) !== -1) score += 3;
+    });
+
+    return score;
+  }
+
+  function routeBySemantic(normalized) {
+    var bestId = null;
+    var bestScore = 0;
+    var secondScore = 0;
+    var id, config, score, waScore;
+
+    if (!semanticTopics) return null;
+
+    for (id in semanticTopics) {
+      if (!semanticTopics.hasOwnProperty(id)) continue;
+      config = semanticTopics[id];
+      score = scoreSemanticTopic(normalized, config);
+      if (score > bestScore) {
+        secondScore = bestScore;
+        bestScore = score;
+        bestId = id;
+      } else if (score > secondScore) {
+        secondScore = score;
+      }
+    }
+
+    if (!bestId || bestScore < MIN_SEMANTIC_SCORE) return null;
+
+    if (bestId === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) {
+      waScore = scoreSemanticTopic(normalized, semanticTopics.work_authorization || {});
+      if (waScore >= bestScore - 1) bestId = 'work_authorization';
+    }
+
+    if (bestId === 'intro' && hasTopicSignal(normalized)) return null;
+    if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
+      bestId = 'remote_hybrid';
+    }
+    if (bestScore < secondScore + 1 && secondScore >= MIN_SEMANTIC_SCORE) return null;
+
+    return entryMap && entryMap[bestId] ? entryMap[bestId] : null;
+  }
+
+  function semanticEntryBoost(normalized, entry) {
+    var config, score = 0;
+    if (!semanticTopics) return 0;
+    config = semanticTopics[entry.id];
+    if (config) score += scoreSemanticTopic(normalized, config);
+    (entry.concepts || []).forEach(function(concept) {
+      if (normalized.indexOf(normalize(concept)) !== -1) score += 3;
+    });
+    return score;
+  }
+
   function routeByIntent(normalized) {
     var i, j, route, pattern;
     if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
@@ -163,6 +243,8 @@
       if (normalizedQuestion.indexOf(normalize(phrase)) !== -1) score += 4;
     });
 
+    score += semanticEntryBoost(normalizedQuestion, entry);
+
     return score;
   }
 
@@ -178,6 +260,9 @@
 
       var normalized = normalize(trimmed);
       var routed = routeByIntent(normalized);
+      if (routed && routed.answer) return routed.answer;
+
+      routed = routeBySemantic(normalized);
       if (routed && routed.answer) return routed.answer;
 
       var tokens = tokenize(trimmed);
@@ -221,6 +306,7 @@
       .then(function(data) {
         knowledge = data;
         entryMap = buildEntryMap(data);
+        semanticTopics = data.semanticTopics || null;
       })
       .catch(function() {
         knowledge = {

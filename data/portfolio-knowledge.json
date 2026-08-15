@@ -1,4 +1,120 @@
 {
+  "semanticTopics": {
+    "sponsorship": {
+      "terms": ["sponsorship", "sponsor", "visa", "h1b", "h-1b", "immigration", "petition", "tn visa", "work visa", "employer sponsor", "company sponsor"],
+      "paraphrases": [
+        "need a visa", "require a visa", "sponsor his visa", "sponsor her visa",
+        "company need to sponsor", "employer need to sponsor", "file for h1b",
+        "immigration support", "visa support", "need immigration", "require immigration",
+        "sponsorship required", "need company to sponsor", "will you sponsor"
+      ]
+    },
+    "work_authorization": {
+      "terms": ["authorized", "authorization", "eligible", "legally", "permitted", "citizen", "green card", "opt", "cpt", "ead", "right to work", "work permit", "usa", "united states", "america"],
+      "paraphrases": [
+        "allowed to work", "authorized to work", "eligible to work", "legally work",
+        "work in usa", "work in us", "work in america", "work in united states",
+        "can he work", "can she work", "legally authorized", "permitted to work",
+        "right to work in", "work authorization status", "employment eligibility"
+      ]
+    },
+    "contact": {
+      "terms": ["contact", "email", "phone", "linkedin", "github", "reach", "call", "connect", "location", "address"],
+      "paraphrases": [
+        "get in touch", "reach out", "reach him", "contact him", "how to contact",
+        "best email", "email address", "phone number", "where is he based", "where is he located"
+      ]
+    },
+    "salary": {
+      "terms": ["salary", "compensation", "pay", "rate", "package", "offer", "negotiate", "expectations"],
+      "paraphrases": [
+        "how much", "pay rate", "salary expectation", "salary expectations", "pay expectation",
+        "expected pay", "expected compensation", "compensation range", "salary range",
+        "what does he want to make", "talk numbers", "discuss pay"
+      ]
+    },
+    "availability": {
+      "terms": ["start", "availability", "available", "notice", "join", "immediately", "begin"],
+      "paraphrases": [
+        "start date", "when can he start", "when can start", "how soon can he start",
+        "available to start", "join date", "notice period", "how soon can he join",
+        "when is he free", "when can he begin", "ready to start"
+      ]
+    },
+    "references": {
+      "terms": ["reference", "references", "supervisor", "recommendation", "referee", "manager"],
+      "paraphrases": [
+        "professional reference", "professional references", "who can i contact about him",
+        "past manager", "previous supervisor", "who can vouch", "speak with his manager",
+        "provide references", "give references"
+      ]
+    },
+    "remote_hybrid": {
+      "terms": ["remote", "hybrid", "onsite", "office", "wfh", "schedule", "home"],
+      "paraphrases": [
+        "work from home", "working from home", "in office", "on site", "on-site", "work schedule",
+        "hybrid schedule", "remote work", "open to remote", "from home"
+      ]
+    },
+    "relocation": {
+      "terms": ["relocate", "relocation", "move", "moving", "relocate"],
+      "paraphrases": [
+        "willing to relocate", "open to relocation", "willing to move", "move for the job",
+        "relocate for work", "would he move", "open to moving"
+      ]
+    },
+    "experience_overview": {
+      "terms": ["experience", "work", "job", "jobs", "career", "intern", "internship", "employer", "role", "roles"],
+      "paraphrases": [
+        "work experience", "job history", "where did he work", "where has he worked",
+        "professional background", "employment history", "past roles", "previous jobs"
+      ]
+    },
+    "projects_inspectai": {
+      "terms": ["inspectai", "inspect ai", "testing", "llm judge", "qa"],
+      "paraphrases": ["tell me about inspectai", "what is inspectai", "inspect ai project", "genai testing pipeline"]
+    },
+    "projects_docchat": {
+      "terms": ["docchat", "doc chat", "rag", "document chat"],
+      "paraphrases": ["tell me about docchat", "document chatbot", "doc chat project"]
+    },
+    "projects_churn": {
+      "terms": ["churn", "customer churn", "retention"],
+      "paraphrases": ["churn prediction", "customer churn project", "churn model"]
+    },
+    "education": {
+      "terms": ["education", "degree", "gpa", "university", "masters", "bachelor", "school", "studied"],
+      "paraphrases": ["where did he study", "where did he go to school", "what degree", "academic background"]
+    },
+    "skills": {
+      "terms": ["skills", "tech stack", "technologies", "programming", "tools", "stack"],
+      "paraphrases": ["programming languages", "what technologies", "what does he know", "technical skills"]
+    },
+    "intro": {
+      "terms": ["who", "about", "background", "summary", "overview", "introduce", "introduction"],
+      "paraphrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "candidate background"]
+    },
+    "open_to_work": {
+      "terms": ["opportunities", "hiring", "interested", "job search", "looking"],
+      "paraphrases": ["open to work", "open to opportunities", "looking for work", "looking for role", "seeking opportunities", "open to roles"]
+    },
+    "resume": {
+      "terms": ["resume", "cv", "curriculum vitae", "pdf"],
+      "paraphrases": ["download resume", "view resume", "see his cv"]
+    },
+    "publications": {
+      "terms": ["publication", "publications", "paper", "ieee", "research"],
+      "paraphrases": ["research paper", "published paper", "has he published"]
+    },
+    "genai_experience": {
+      "terms": ["generative ai", "genai", "llm", "rag", "agentic", "langchain", "langgraph"],
+      "paraphrases": ["gen ai experience", "llm experience", "experience with generative ai", "worked with llms"]
+    },
+    "highlight_project": {
+      "terms": ["best", "strongest", "highlight", "impressive", "standout", "top", "notable", "favorite"],
+      "paraphrases": ["best project", "strongest project", "most impressive project", "standout project", "top project"]
+    }
+  },
   "entries": [
     {
       "id": "sponsorship",
