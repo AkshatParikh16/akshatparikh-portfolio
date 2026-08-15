@@ -6,7 +6,8 @@ const knowledge = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/portfolio-knowledge.json'), 'utf8')
 );
 
-const FALLBACK = "I'm not sure about that one! Akshat would be the best person to ask — akshat.sparikh@gmail.com or (408) 637-9861.";
+const FALLBACK = "I don't have that in Akshat's portfolio notes.";
+const MIN_CONFIDENT_SCORE = 5;
 
 const IGNORE_TOKENS = { akshat: 1, parikh: 1, jack: 1, he: 1, him: 1, his: 1, she: 1, her: 1 };
 const TOPIC_SIGNALS = [
@@ -84,6 +85,15 @@ function fuzzyWordMatch(word, target, maxDist) {
   return false;
 }
 
+function isIntroQuestion(normalized) {
+  const signals = [
+    'who is akshat', 'who is he', 'tell me about akshat', 'about akshat', 'tell me about him',
+    'what is akshat', 'introduce akshat', 'background on akshat', 'overview of akshat',
+    'candidate background', 'give me an overview', 'high level background'
+  ];
+  return signals.some((signal) => normalized.indexOf(signal) !== -1);
+}
+
 function mentionsSponsorship(normalized) {
   if (normalized.includes('sponsor') || normalized.includes('sponsorship')) return true;
   const targets = ['sponsorship', 'sponsor', 'spnorship', 'sponsership', 'sponorship'];
@@ -101,9 +111,23 @@ function hasTopicSignal(normalized) {
   return TOPIC_SIGNALS.some((word) => normalized.indexOf(word) !== -1);
 }
 
+function meaningfulWords(normalized) {
+  return normalized.split(' ').filter((w) => w.length > 1 && !STOP_WORDS[w] && !IGNORE_TOKENS[w]);
+}
+
+function isOffTopicQuestion(normalized) {
+  const match = normalized.match(/tell me about (?:his|her|their|the|a|an) ([a-z0-9-]+)/);
+  if (!match) return false;
+  const allowed = {
+    experience: 1, work: 1, projects: 1, project: 1, skills: 1, background: 1,
+    education: 1, resume: 1, internship: 1, role: 1, career: 1, inspectai: 1, docchat: 1
+  };
+  return !allowed[match[1]];
+}
+
 function scoreSemanticTopic(normalized, config) {
   let score = 0;
-  const words = normalized.split(' ');
+  const words = meaningfulWords(normalized);
   (config.paraphrases || []).forEach((p) => {
     const phrase = normalize(p);
     if (phrase && normalized.indexOf(phrase) !== -1) score += 6;
@@ -146,7 +170,7 @@ function routeBySemantic(normalized) {
     const waScore = scoreSemanticTopic(normalized, semanticTopics.work_authorization || {});
     if (waScore >= bestScore - 1) bestId = 'work_authorization';
   }
-  if (bestId === 'intro' && hasTopicSignal(normalized)) return null;
+  if (bestId === 'intro' && !isIntroQuestion(normalized)) return null;
   if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
     bestId = 'remote_hybrid';
   }
@@ -188,6 +212,7 @@ function scoreEntry(tokens, normalizedQuestion, entry) {
   const haystack = normalize(
     (entry.keywords || []).join(' ') + ' ' + (entry.text || '') + ' ' + (entry.id || '').replace(/_/g, ' ')
   );
+  if (entry.id === 'intro' && !isIntroQuestion(normalizedQuestion)) return 0;
   if (entry.id === 'intro' && hasTopicSignal(normalizedQuestion)) return 0;
   tokens.forEach((token) => { if (haystack.indexOf(token) !== -1) score += 1; });
   (entry.keywords || []).forEach((kw) => {
@@ -214,16 +239,40 @@ function findAnswer(question) {
   let best = null;
   let bestScore = 0;
   let bestPriority = -1;
+  let second = null;
+  let secondScore = 0;
   knowledge.entries.forEach((entry) => {
     const score = scoreEntry(tokens, normalized, entry);
     const priority = entry.priority || 1;
-    if (score > bestScore || (score === bestScore && score >= MIN_SCORE && priority > bestPriority)) {
+    if (score > bestScore) {
+      secondScore = bestScore;
+      second = best;
+      bestScore = score;
+      bestPriority = priority;
+      best = entry;
+    } else if (score > secondScore) {
+      secondScore = score;
+      second = entry;
+    } else if (score === bestScore && score >= MIN_SCORE && priority > bestPriority) {
+      second = best;
+      secondScore = bestScore;
       bestScore = score;
       bestPriority = priority;
       best = entry;
     }
   });
-  if (best && bestScore >= MIN_SCORE && best.answer) return { id: best.id, answer: best.answer };
+  if (best && best.id === 'intro' && !isIntroQuestion(normalized)) {
+    return { id: 'fallback', answer: FALLBACK };
+  }
+  if (best && bestScore >= MIN_SCORE && best.answer) {
+    if (isOffTopicQuestion(normalized)) {
+      return { id: 'fallback', answer: FALLBACK };
+    }
+    if (bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
+      return { id: 'fallback', answer: FALLBACK };
+    }
+    return { id: best.id, answer: best.answer };
+  }
   return { id: 'fallback', answer: FALLBACK };
 }
 
@@ -244,8 +293,9 @@ const tests = [
   { q: 'What kind of pay is he looking for?', expectId: 'salary', expectSnippet: 'depends on the role' },
   { q: 'Is he open to working from home?', expectId: 'remote_hybrid', expectSnippet: 'flexible' },
   { q: 'Would he relocate for the right role?', expectId: 'relocation', expectSnippet: 'open to relocation' },
-  { q: 'What is the weather in Tokyo?', expectId: 'fallback', expectSnippet: 'not sure about that one' },
-  { q: 'Who is Akshat?', expectId: 'intro', expectSnippet: 'MS graduate' }
+  { q: 'What is the weather in Tokyo?', expectId: 'fallback', expectSnippet: "don't have that" },
+  { q: 'Tell me about his dog', expectId: 'fallback', expectSnippet: "don't have that" },
+  { q: 'Who is Akshat?', expectId: 'intro', expectSnippet: 'quick snapshot' }
 ];
 
 let passed = 0;

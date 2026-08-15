@@ -91,8 +91,8 @@
       "paraphrases": ["programming languages", "what technologies", "what does he know", "technical skills"]
     },
     "intro": {
-      "terms": ["who", "about", "background", "summary", "overview", "introduce", "introduction"],
-      "paraphrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "candidate background"]
+      "terms": ["introduce", "introduction", "background", "overview"],
+      "paraphrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "tell me about him", "candidate background"]
     },
     "open_to_work": {
       "terms": ["opportunities", "hiring", "interested", "job search", "looking"],
@@ -191,10 +191,10 @@
     {
       "id": "intro",
       "priority": 1,
-      "keywords": ["who", "about", "introduce", "introduction", "background", "summary", "overview", "graduate", "bay area", "tell me about"],
-      "phrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat"],
+      "keywords": ["introduce", "introduction", "background", "overview", "graduate", "bay area"],
+      "phrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "tell me about him"],
       "text": "Akshat Parikh Data Scientist ML Engineer MS graduate Data Science AI Bay Area software engineering machine learning generative AI agentic AI data engineering",
-      "answer": "Akshat Parikh is a recent MS graduate in Data Science & AI (May 2026), based in the Bay Area. He has experience across software engineering, machine learning, generative AI, agentic AI, and data engineering. Ask me about any specific area and I'll go deeper!"
+      "answer": "Sure — here's the quick snapshot:\n\nAkshat Parikh · MS in Data Science & AI (May 2026) · Bay Area\n\nHe works across software engineering, ML, GenAI, agentic AI, and data engineering.\n\nWant specifics? Ask about experience, projects, or skills."
     },
     {
       "id": "education",

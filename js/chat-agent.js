@@ -1,13 +1,13 @@
 (function() {
   var BOT_NAME = 'Jack';
   var BOT_TAGLINE = "Akshat's personal AI assistant";
-  var WELCOME = "Hey! I'm Jack — Akshat's personal AI assistant. I can help with his experience, projects, skills, education, and how to reach him. What would you like to know?";
-  var FALLBACK = "I'm not sure about that one! Akshat would be the best person to ask — akshat.sparikh@gmail.com or (408) 637-9861.";
-  var EMPTY_PROMPT = "Go ahead and ask me about Akshat's experience, projects, skills, education, or how to contact him.";
+  var WELCOME = "Hey — I'm Jack, Akshat's personal AI assistant.\n\nI can help with:\n• Work experience & internships\n• Projects & technical skills\n• Education & hiring details\n• How to reach him\n\nWhat would you like to know?";
+  var FALLBACK = "I don't have that in Akshat's portfolio notes.\n\nBest next step — reach him directly:\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861\n\nI'm Jack — happy to help with experience, projects, skills, or hiring questions.";
+  var EMPTY_PROMPT = "I'm Jack — ask me about Akshat's experience, projects, skills, education, or how to reach him.";
   var STARTERS = [
-    "What's Akshat's work experience?",
+    "What's his work experience?",
     "Tell me about his best projects",
-    "How can I get in touch with him?"
+    "How can I contact him?"
   ];
 
   var IGNORE_TOKENS = {
@@ -56,6 +56,7 @@
 
   var MIN_SCORE = 2;
   var MIN_SEMANTIC_SCORE = 4;
+  var MIN_CONFIDENT_SCORE = 5;
   var knowledge = null;
   var entryMap = null;
   var semanticTopics = null;
@@ -108,6 +109,60 @@
     return false;
   }
 
+  function isIntroQuestion(normalized) {
+    var signals = [
+      'who is akshat', 'who is he', 'tell me about akshat', 'about akshat', 'tell me about him',
+      'what is akshat', 'introduce akshat', 'background on akshat', 'overview of akshat',
+      'candidate background', 'give me an overview', 'high level background'
+    ];
+    var i;
+    for (i = 0; i < signals.length; i++) {
+      if (normalized.indexOf(signals[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function formatJackAnswer(text, entry) {
+    var answer = String(text || '').trim();
+    if (!answer) return FALLBACK;
+    if (entry && entry.id === 'intro' && answer.indexOf('Ask me about') !== -1) {
+      answer = answer.replace('Ask me about any specific area and I\'ll go deeper!', 'Want specifics? Ask about experience, projects, or skills.');
+    }
+    return answer;
+  }
+
+  function renderBotMessage(el, text) {
+    var blocks = String(text || '').split('\n\n');
+    var b, l, line, lead, para, bullet;
+
+    el.textContent = '';
+    for (b = 0; b < blocks.length; b++) {
+      if (!blocks[b].trim()) continue;
+      var lines = blocks[b].split('\n');
+      for (l = 0; l < lines.length; l++) {
+        line = lines[l].trim();
+        if (!line) continue;
+        if (line.indexOf('• ') === 0) {
+          bullet = document.createElement('div');
+          bullet.className = 'chat-msg__bullet';
+          bullet.textContent = line.slice(2);
+          el.appendChild(bullet);
+        } else if (b === 0 && l === 0 && blocks.length > 1) {
+          lead = document.createElement('div');
+          lead.className = 'chat-msg__lead';
+          lead.textContent = line;
+          el.appendChild(lead);
+        } else {
+          para = document.createElement('div');
+          para.className = 'chat-msg__line';
+          para.textContent = line;
+          el.appendChild(para);
+        }
+      }
+    }
+    if (!el.childNodes.length) el.textContent = text;
+  }
+
   function tokenize(text) {
     return normalize(text).split(' ').filter(function(w) {
       return w.length > 1 && !STOP_WORDS[w] && !IGNORE_TOKENS[w];
@@ -121,9 +176,27 @@
     });
   }
 
+  function meaningfulWords(normalized) {
+    return normalized.split(' ').filter(function(w) {
+      return w.length > 1 && !STOP_WORDS[w] && !IGNORE_TOKENS[w];
+    });
+  }
+
+  function isOffTopicQuestion(normalized) {
+    var match = normalized.match(/tell me about (?:his|her|their|the|a|an) ([a-z0-9-]+)/);
+    var allowed, topic;
+    if (!match) return false;
+    topic = match[1];
+    allowed = {
+      experience: 1, work: 1, projects: 1, project: 1, skills: 1, background: 1,
+      education: 1, resume: 1, internship: 1, role: 1, career: 1, inspectai: 1, docchat: 1
+    };
+    return !allowed[topic];
+  }
+
   function scoreSemanticTopic(normalized, config) {
     var score = 0;
-    var words = normalized.split(' ');
+    var words = meaningfulWords(normalized);
     var i, j, phrase, term, t, w;
 
     (config.paraphrases || []).forEach(function(p) {
@@ -179,7 +252,7 @@
       if (waScore >= bestScore - 1) bestId = 'work_authorization';
     }
 
-    if (bestId === 'intro' && hasTopicSignal(normalized)) return null;
+    if (bestId === 'intro' && !isIntroQuestion(normalized)) return null;
     if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
       bestId = 'remote_hybrid';
     }
@@ -225,6 +298,10 @@
       (entry.keywords || []).join(' ') + ' ' + (entry.text || '') + ' ' + (entry.id || '').replace(/_/g, ' ')
     );
 
+    if (entry.id === 'intro' && !isIntroQuestion(normalizedQuestion)) {
+      return 0;
+    }
+
     if (entry.id === 'intro' && hasTopicSignal(normalizedQuestion)) {
       return 0;
     }
@@ -255,37 +332,63 @@
   function findAnswer(question) {
     try {
       var trimmed = String(question || '').trim();
-      if (!trimmed) return EMPTY_PROMPT;
-      if (!knowledge || !knowledge.entries || !knowledge.entries.length) return FALLBACK;
+      if (!trimmed) return formatJackAnswer(EMPTY_PROMPT, null);
+      if (!knowledge || !knowledge.entries || !knowledge.entries.length) return formatJackAnswer(FALLBACK, null);
 
       var normalized = normalize(trimmed);
       var routed = routeByIntent(normalized);
-      if (routed && routed.answer) return routed.answer;
+      if (routed && routed.answer) return formatJackAnswer(routed.answer, routed);
 
       routed = routeBySemantic(normalized);
-      if (routed && routed.answer) return routed.answer;
+      if (routed && routed.answer) return formatJackAnswer(routed.answer, routed);
 
       var tokens = tokenize(trimmed);
-      if (!tokens.length) return EMPTY_PROMPT;
+      if (!tokens.length) return formatJackAnswer(EMPTY_PROMPT, null);
 
       var best = null;
+      var second = null;
       var bestScore = 0;
+      var secondScore = 0;
       var bestPriority = -1;
 
       knowledge.entries.forEach(function(entry) {
         var score = scoreEntry(tokens, normalized, entry);
         var priority = entry.priority || 1;
-        if (score > bestScore || (score === bestScore && score >= MIN_SCORE && priority > bestPriority)) {
+        if (score > bestScore) {
+          secondScore = bestScore;
+          second = best;
+          bestScore = score;
+          bestPriority = priority;
+          best = entry;
+        } else if (score > secondScore) {
+          secondScore = score;
+          second = entry;
+        } else if (score === bestScore && score >= MIN_SCORE && priority > bestPriority) {
+          second = best;
+          secondScore = bestScore;
           bestScore = score;
           bestPriority = priority;
           best = entry;
         }
       });
 
-      if (best && bestScore >= MIN_SCORE && best.answer) return best.answer;
-      return FALLBACK;
+      if (best && best.id === 'intro' && !isIntroQuestion(normalized)) {
+        return formatJackAnswer(FALLBACK, null);
+      }
+
+      if (best && bestScore >= MIN_SCORE && best.answer) {
+        if (isOffTopicQuestion(normalized)) {
+          return formatJackAnswer(FALLBACK, null);
+        }
+        if (bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
+          return formatJackAnswer(FALLBACK, null);
+        }
+        return formatJackAnswer(best.answer, best);
+      }
+
+      return formatJackAnswer(FALLBACK, null);
     } catch (err) {
-      return FALLBACK;
+      return formatJackAnswer(FALLBACK, null);
     }
   }
 
@@ -325,7 +428,8 @@
     var el = document.createElement('div');
     el.className = 'chat-msg chat-msg--' + role;
     el.setAttribute('role', role === 'user' ? 'status' : 'log');
-    el.textContent = text;
+    if (role === 'bot') renderBotMessage(el, text);
+    else el.textContent = text;
     return el;
   }
 
@@ -439,7 +543,7 @@
         '<div class="chat-messages" aria-live="polite"></div>' +
         '<div class="chat-starters"></div>' +
         '<form class="chat-form">' +
-          '<input type="text" class="chat-input" placeholder="Ask about experience, projects, skills\u2026" maxlength="500" autocomplete="off" aria-label="Your question">' +
+          '<input type="text" class="chat-input" placeholder="Ask Jack about experience, projects, skills\u2026" maxlength="500" autocomplete="off" aria-label="Message for Jack">' +
           '<button type="submit" class="chat-send" aria-label="Send message">' +
             '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>' +
           '</button>' +
