@@ -8,6 +8,8 @@ const knowledge = JSON.parse(
 
 const FALLBACK = "I don't have that on file.";
 const MIN_CONFIDENT_SCORE = 5;
+const MIN_ALIAS_SCORE = 2;
+const OVERVIEW_IDS = { intro: 1, experience_overview: 1, projects_overview: 1 };
 
 const IGNORE_TOKENS = { akshat: 1, parikh: 1, jack: 1, he: 1, him: 1, his: 1, she: 1, her: 1 };
 const TOPIC_SIGNALS = [
@@ -29,7 +31,7 @@ const INTENT_ROUTES = [
   { id: 'projects_inspectai', patterns: ['inspectai', 'inspect ai'] },
   { id: 'projects_docchat', patterns: ['docchat', 'doc chat'] },
   { id: 'projects_churn', patterns: ['churn', 'customer churn'] },
-  { id: 'experience_overview', patterns: ['work experience', 'job history', 'where did he work', 'where has he worked', 'his experience', 'career'] },
+  { id: 'experience_overview', patterns: ['work experience', 'job history', 'where did he work', 'where has he worked', 'his experience'] },
   { id: 'education', patterns: ['education', 'degree', 'gpa', 'university', 'masters', 'bachelor', 'where did he study'] },
   { id: 'skills', patterns: ['skills', 'tech stack', 'technologies', 'programming languages', 'what does he know'] },
   { id: 'publications', patterns: ['publication', 'paper', 'ieee', 'research paper'] },
@@ -54,6 +56,9 @@ const MIN_SEMANTIC_SCORE = 4;
 const entryMap = {};
 knowledge.entries.forEach((e) => { entryMap[e.id] = e; });
 const semanticTopics = knowledge.semanticTopics || null;
+const entityRoutes = knowledge.entityRoutes || null;
+const disambiguationRoutes = knowledge.disambiguationRoutes || null;
+const contextFollowUps = knowledge.contextFollowUps || null;
 const recruiterIntents = (knowledge.recruiterIntents || []).slice().sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
 function normalize(text) {
@@ -242,6 +247,10 @@ function semanticEntryBoost(normalized, entry) {
 function routeByIntent(normalized) {
   const recruiter = routeByRecruiterIntent(normalized);
   if (recruiter) return recruiter;
+  return null;
+}
+
+function routeByBroadIntent(normalized) {
   for (const route of INTENT_ROUTES) {
     for (let j = route.patterns.length - 1; j >= 0; j--) {
       const pattern = route.patterns[j];
@@ -256,7 +265,92 @@ function routeByIntent(normalized) {
   return null;
 }
 
-function scoreEntry(tokens, normalizedQuestion, entry) {
+function routeByEntity(normalized) {
+  if (!entityRoutes || !entityRoutes.length) return null;
+  const routes = entityRoutes.slice().sort((a, b) => {
+    const aMax = Math.max(0, ...(a.exact || []).map((item) => item.length));
+    const bMax = Math.max(0, ...(b.exact || []).map((item) => item.length));
+    return bMax - aMax;
+  });
+  let bestEntry = null;
+  let bestLen = 0;
+  for (const route of routes) {
+    const entry = entryMap[route.entryId];
+    if (!entry) continue;
+    for (const exact of route.exact || []) {
+      if (normalized === exact || normalized.indexOf(exact) !== -1) {
+        if (exact.length > bestLen) {
+          bestLen = exact.length;
+          bestEntry = entry;
+        }
+      }
+    }
+  }
+  if (bestEntry) return { entry: bestEntry, via: 'entity-exact' };
+  if (meaningfulWords(normalized).length === 1) {
+    for (const route of routes) {
+      const entry = entryMap[route.entryId];
+      if (!entry) continue;
+      for (const alias of route.aliases || []) {
+        if (normalized === normalize(alias)) return { entry, via: 'entity-alias' };
+      }
+    }
+  }
+  return null;
+}
+
+function routeByDisambiguation(normalized) {
+  if (!disambiguationRoutes || !disambiguationRoutes.length) return null;
+  const words = meaningfulWords(normalized);
+  if (words.length !== 1) return null;
+  for (const route of disambiguationRoutes) {
+    if (normalize(route.token) === words[0]) {
+      return { answer: route.answer, id: 'disambiguation:' + route.token };
+    }
+  }
+  return null;
+}
+
+function getContextEntryIds(context) {
+  if (!context || !context.lastEntryId || !contextFollowUps) return [];
+  return contextFollowUps[context.lastEntryId] || [];
+}
+
+function scoreContextFollowUp(normalized, entry, context) {
+  const ids = getContextEntryIds(context);
+  if (!ids.length || !ids.includes(entry.id)) return 0;
+  if (meaningfulWords(normalized).length > 4) return 0;
+  if (!entityRoutes) return 4;
+  let score = 0;
+  for (const route of entityRoutes) {
+    if (!ids.includes(route.entryId)) continue;
+    for (const exact of route.exact || []) {
+      if (normalized.indexOf(exact) !== -1) score += 8;
+    }
+    for (const alias of route.aliases || []) {
+      const a = normalize(alias);
+      if (a && normalized.indexOf(a) !== -1) score += 6;
+    }
+    if (entry.id === route.entryId && score === 0 && meaningfulWords(normalized).length <= 2) score += 5;
+  }
+  return score;
+}
+
+function hasSpecificEntitySignal(normalized) {
+  if (!entityRoutes) return false;
+  for (const route of entityRoutes) {
+    for (const exact of route.exact || []) {
+      if (normalized.indexOf(exact) !== -1) return true;
+    }
+    for (const alias of route.aliases || []) {
+      const a = normalize(alias);
+      if (a && normalized.indexOf(a) !== -1) return true;
+    }
+  }
+  return false;
+}
+
+function scoreEntry(tokens, normalizedQuestion, entry, context) {
   let score = 0;
   const haystack = normalize(
     (entry.keywords || []).join(' ') + ' ' + (entry.text || '') + ' ' + (entry.id || '').replace(/_/g, ' ')
@@ -273,14 +367,24 @@ function scoreEntry(tokens, normalizedQuestion, entry) {
     if (normalizedQuestion.indexOf(normalize(phrase)) !== -1) score += 4;
   });
   score += semanticEntryBoost(normalizedQuestion, entry);
+  score += scoreContextFollowUp(normalizedQuestion, entry, context);
+  if (OVERVIEW_IDS[entry.id] && hasSpecificEntitySignal(normalizedQuestion)) score -= 12;
   return score;
 }
 
-function findAnswer(question) {
+function findMatch(question, context) {
   const trimmed = String(question || '').trim();
   if (!trimmed) return { id: null, answer: '' };
   const normalized = normalize(trimmed);
   let routed = routeByIntent(normalized);
+  if (routed && routed.answer) return { id: routed.id, answer: routed.answer };
+  const entityHit = routeByEntity(normalized);
+  if (entityHit && entityHit.entry && entityHit.entry.answer) {
+    return { id: entityHit.entry.id, answer: entityHit.entry.answer };
+  }
+  const disambiguation = routeByDisambiguation(normalized);
+  if (disambiguation && disambiguation.answer) return { id: disambiguation.id, answer: disambiguation.answer };
+  routed = routeByBroadIntent(normalized);
   if (routed && routed.answer) return { id: routed.id, answer: routed.answer };
   routed = routeBySemantic(normalized);
   if (routed && routed.answer) return { id: routed.id, answer: routed.answer };
@@ -291,7 +395,7 @@ function findAnswer(question) {
   let second = null;
   let secondScore = 0;
   knowledge.entries.forEach((entry) => {
-    const score = scoreEntry(tokens, normalized, entry);
+    const score = scoreEntry(tokens, normalized, entry, context);
     const priority = entry.priority || 1;
     if (score > bestScore) {
       secondScore = bestScore;
@@ -314,15 +418,19 @@ function findAnswer(question) {
     return { id: 'fallback', answer: FALLBACK };
   }
   if (best && bestScore >= MIN_SCORE && best.answer) {
-    if (isOffTopicQuestion(normalized)) {
+    if (isOffTopicQuestion(normalized)) return { id: 'fallback', answer: FALLBACK };
+    const viaEntity = hasSpecificEntitySignal(normalized) || scoreContextFollowUp(normalized, best, context) >= 5;
+    if (!viaEntity && bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
       return { id: 'fallback', answer: FALLBACK };
     }
-    if (bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
-      return { id: 'fallback', answer: FALLBACK };
-    }
+    if (viaEntity && bestScore < MIN_ALIAS_SCORE) return { id: 'fallback', answer: FALLBACK };
     return { id: best.id, answer: best.answer };
   }
   return { id: 'fallback', answer: FALLBACK };
+}
+
+function findAnswer(question, context) {
+  return findMatch(question, context);
 }
 
 const tests = [
@@ -335,7 +443,7 @@ const tests = [
   { q: 'Visa?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Authorized?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: 'Salary?', expectId: 'salary', expectSnippet: 'depends on the role' },
-  { q: 'Remote?', expectId: 'remote_hybrid', expectSnippet: 'flexible' },
+  { q: 'Remote?', expectId: 'remote_hybrid', expectSnippet: 'Remote, hybrid' },
   { q: 'References?', expectId: 'references', expectSnippet: 'David Powers' },
   { q: 'Start?', expectId: 'availability', expectSnippet: 'immediately' },
   { q: 'Resume?', expectId: 'resume', expectSnippet: 'resume' },
@@ -355,11 +463,25 @@ const tests = [
   { q: 'Tell me about InspectAI', expectId: 'projects_inspectai', expectSnippet: 'InspectAI' },
   { q: 'What are his salary expectations?', expectId: 'salary', expectSnippet: 'depends on the role' },
   { q: 'What kind of pay is he looking for?', expectId: 'salary', expectSnippet: 'depends on the role' },
-  { q: 'Is he open to working from home?', expectId: 'remote_hybrid', expectSnippet: 'flexible' },
+  { q: 'Is he open to working from home?', expectId: 'remote_hybrid', expectSnippet: 'Remote, hybrid' },
   { q: 'Would he relocate for the right role?', expectId: 'relocation', expectSnippet: 'open to relocation' },
   { q: 'What is the weather in Tokyo?', expectId: 'fallback', expectSnippet: "don't have that" },
   { q: 'Tell me about his dog', expectId: 'fallback', expectSnippet: "don't have that" },
-  { q: 'Who is Akshat?', expectId: 'intro', expectSnippet: 'quick snapshot' }
+  { q: 'UTA', expectId: 'disambiguation:uta', expectSnippet: 'two UTA roles' },
+  { q: 'UTA Career Development Center', expectId: 'experience_uta_cdc', expectSnippet: 'Career Development Center' },
+  { q: 'Agevole', expectId: 'experience_agevole', expectSnippet: 'Agevole Innovation' },
+  { q: 'Cygnux', expectId: 'experience_cygnux', expectSnippet: 'Cygnux Softtech' },
+  { q: 'InspectAI', expectId: 'projects_inspectai', expectSnippet: 'InspectAI' },
+  { q: 'DocChat', expectId: 'projects_docchat', expectSnippet: 'DocChat' },
+  { q: 'cdc', expectId: 'experience_uta_cdc', expectSnippet: 'Career Development Center' },
+  { q: 'Who is Akshat?', expectId: 'intro', expectSnippet: 'Akshat Parikh' }
+];
+
+const followUpTests = [
+  { setup: 'Experience?', followUp: 'UTA', expectId: 'disambiguation:uta', expectSnippet: 'two UTA roles' },
+  { setup: 'Experience?', followUp: 'cdc', expectId: 'experience_uta_cdc', expectSnippet: 'Handshake' },
+  { setup: 'What projects?', followUp: 'InspectAI', expectId: 'projects_inspectai', expectSnippet: 'LangGraph' },
+  { setup: 'What projects has he built?', followUp: 'churn', expectId: 'projects_churn', expectSnippet: 'ROC-AUC' }
 ];
 
 let passed = 0;
@@ -376,6 +498,26 @@ for (const t of tests) {
   } else {
     failed++;
     console.log('FAIL', t.q);
+    console.log('      expected id:', t.expectId, 'got:', id);
+    console.log('      expected snippet:', t.expectSnippet);
+    console.log('      answer:', answer.slice(0, 120) + '...');
+  }
+}
+
+for (const t of followUpTests) {
+  const context = { lastEntryId: null };
+  const setup = findAnswer(t.setup, context);
+  context.lastEntryId = setup.id;
+  const { id, answer } = findAnswer(t.followUp, context);
+  const idOk = id === t.expectId;
+  const snippetOk = answer.toLowerCase().indexOf(t.expectSnippet.toLowerCase()) !== -1;
+  const ok = idOk && snippetOk;
+  if (ok) {
+    passed++;
+    console.log('OK  ', t.setup, '->', t.followUp, '->', id);
+  } else {
+    failed++;
+    console.log('FAIL', t.setup, '->', t.followUp);
     console.log('      expected id:', t.expectId, 'got:', id);
     console.log('      expected snippet:', t.expectSnippet);
     console.log('      answer:', answer.slice(0, 120) + '...');

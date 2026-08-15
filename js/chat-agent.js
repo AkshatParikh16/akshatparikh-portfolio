@@ -94,7 +94,7 @@
     { id: 'projects_inspectai', patterns: ['inspectai', 'inspect ai'] },
     { id: 'projects_docchat', patterns: ['docchat', 'doc chat'] },
     { id: 'projects_churn', patterns: ['churn', 'customer churn'] },
-    { id: 'experience_overview', patterns: ['work experience', 'job history', 'where did he work', 'where has he worked', 'his experience', 'career'] },
+    { id: 'experience_overview', patterns: ['work experience', 'job history', 'where did he work', 'where has he worked', 'his experience'] },
     { id: 'education', patterns: ['education', 'degree', 'gpa', 'university', 'masters', 'bachelor', 'where did he study'] },
     { id: 'skills', patterns: ['skills', 'tech stack', 'technologies', 'programming languages', 'what does he know'] },
     { id: 'publications', patterns: ['publication', 'paper', 'ieee', 'research paper'] },
@@ -118,10 +118,15 @@
   var MIN_SCORE = 2;
   var MIN_SEMANTIC_SCORE = 4;
   var MIN_CONFIDENT_SCORE = 5;
+  var MIN_ALIAS_SCORE = 2;
+  var OVERVIEW_IDS = { intro: 1, experience_overview: 1, projects_overview: 1 };
   var knowledge = null;
   var entryMap = null;
   var semanticTopics = null;
   var recruiterIntents = null;
+  var entityRoutes = null;
+  var disambiguationRoutes = null;
+  var contextFollowUps = null;
 
   function normalize(text) {
     return String(text || '')
@@ -346,7 +351,10 @@
   function routeByIntent(normalized) {
     var routed = routeByRecruiterIntent(normalized);
     if (routed) return routed;
+    return null;
+  }
 
+  function routeByBroadIntent(normalized) {
     var i, j, route, pattern;
     for (i = 0; i < INTENT_ROUTES.length; i++) {
       route = INTENT_ROUTES[i];
@@ -363,7 +371,127 @@
     return null;
   }
 
-  function scoreEntry(tokens, normalizedQuestion, entry) {
+  function routeByEntity(normalized) {
+    var routes, i, j, route, alias, aliases, entry, exact, bestEntry, bestLen, len;
+    if (!entityRoutes || !entityRoutes.length) return null;
+
+    routes = entityRoutes.slice().sort(function(a, b) {
+      var aMax = 0;
+      var bMax = 0;
+      (a.exact || []).forEach(function(item) { if (item.length > aMax) aMax = item.length; });
+      (b.exact || []).forEach(function(item) { if (item.length > bMax) bMax = item.length; });
+      return bMax - aMax;
+    });
+
+    bestEntry = null;
+    bestLen = 0;
+    for (i = 0; i < routes.length; i++) {
+      route = routes[i];
+      entry = entryMap && entryMap[route.entryId] ? entryMap[route.entryId] : null;
+      if (!entry) continue;
+      exact = route.exact || [];
+      for (j = 0; j < exact.length; j++) {
+        if (normalized === exact[j] || normalized.indexOf(exact[j]) !== -1) {
+          len = exact[j].length;
+          if (len > bestLen) {
+            bestLen = len;
+            bestEntry = entry;
+          }
+        }
+      }
+    }
+    if (bestEntry) return { entry: bestEntry, via: 'entity-exact' };
+
+    if (meaningfulWords(normalized).length === 1) {
+      for (i = 0; i < routes.length; i++) {
+        route = routes[i];
+        entry = entryMap && entryMap[route.entryId] ? entryMap[route.entryId] : null;
+        if (!entry) continue;
+        aliases = route.aliases || [];
+        for (j = 0; j < aliases.length; j++) {
+          alias = normalize(aliases[j]);
+          if (alias && normalized === alias) {
+            return { entry: entry, via: 'entity-alias' };
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function routeByDisambiguation(normalized) {
+    var words, i, route;
+    if (!disambiguationRoutes || !disambiguationRoutes.length) return null;
+    words = meaningfulWords(normalized);
+    if (words.length !== 1) return null;
+    for (i = 0; i < disambiguationRoutes.length; i++) {
+      route = disambiguationRoutes[i];
+      if (normalize(route.token) === words[0]) {
+        return { answer: route.answer, id: 'disambiguation:' + route.token };
+      }
+    }
+    return null;
+  }
+
+  function getContextEntryIds(context) {
+    var ids = [];
+    var lastId, followUps, i;
+    if (!context || !context.lastEntryId || !contextFollowUps) return ids;
+    lastId = context.lastEntryId;
+    followUps = contextFollowUps[lastId];
+    if (followUps && followUps.length) {
+      for (i = 0; i < followUps.length; i++) ids.push(followUps[i]);
+    }
+    return ids;
+  }
+
+  function scoreContextFollowUp(normalized, entry, context) {
+    var ids, i, route, j, alias, aliases, exact, score = 0;
+    ids = getContextEntryIds(context);
+    if (!ids.length || ids.indexOf(entry.id) === -1) return 0;
+    if (meaningfulWords(normalized).length > 4) return 0;
+
+    if (!entityRoutes) return 4;
+
+    for (i = 0; i < entityRoutes.length; i++) {
+      route = entityRoutes[i];
+      if (ids.indexOf(route.entryId) === -1) continue;
+      exact = route.exact || [];
+      for (j = 0; j < exact.length; j++) {
+        if (normalized.indexOf(exact[j]) !== -1) score += 8;
+      }
+      aliases = route.aliases || [];
+      for (j = 0; j < aliases.length; j++) {
+        alias = normalize(aliases[j]);
+        if (alias && normalized.indexOf(alias) !== -1) score += 6;
+      }
+      if (entry.id === route.entryId && score === 0 && meaningfulWords(normalized).length <= 2) {
+        score += 5;
+      }
+    }
+    return score;
+  }
+
+  function hasSpecificEntitySignal(normalized) {
+    var i, route, j, exact, alias, aliases;
+    if (!entityRoutes) return false;
+    for (i = 0; i < entityRoutes.length; i++) {
+      route = entityRoutes[i];
+      exact = route.exact || [];
+      for (j = 0; j < exact.length; j++) {
+        if (normalized.indexOf(exact[j]) !== -1) return true;
+      }
+      aliases = route.aliases || [];
+      for (j = 0; j < aliases.length; j++) {
+        alias = normalize(aliases[j]);
+        if (alias && normalized.indexOf(alias) !== -1) return true;
+      }
+    }
+    return false;
+  }
+
+  function scoreEntry(tokens, normalizedQuestion, entry, context) {
     var score = 0;
     var haystack = normalize(
       (entry.keywords || []).join(' ') + ' ' + (entry.text || '') + ' ' + (entry.id || '').replace(/_/g, ' ')
@@ -392,38 +520,61 @@
     });
 
     score += semanticEntryBoost(normalizedQuestion, entry);
+    score += scoreContextFollowUp(normalizedQuestion, entry, context);
+
+    if (OVERVIEW_IDS[entry.id] && hasSpecificEntitySignal(normalizedQuestion)) {
+      score -= 12;
+    }
 
     return score;
   }
 
-  function findEntryById(id) {
-    return entryMap && entryMap[id] ? entryMap[id] : null;
-  }
-
-  function findAnswer(question) {
+  function findMatch(question, context) {
     try {
       var trimmed = String(question || '').trim();
-      if (!trimmed) return formatJackAnswer(EMPTY_PROMPT, null);
-      if (!knowledge || !knowledge.entries || !knowledge.entries.length) return formatJackAnswer(FALLBACK, null);
-
-      var normalized = normalize(trimmed);
-      var routed = routeByIntent(normalized);
-      if (routed && routed.answer) return formatJackAnswer(routed.answer, routed);
-
-      routed = routeBySemantic(normalized);
-      if (routed && routed.answer) return formatJackAnswer(routed.answer, routed);
-
-      var tokens = tokenize(trimmed);
-      if (!tokens.length) return formatJackAnswer(EMPTY_PROMPT, null);
-
-      var best = null;
-      var second = null;
+      var normalized, routed, entityHit, disambiguation, tokens, best, second;
       var bestScore = 0;
       var secondScore = 0;
       var bestPriority = -1;
+      var viaEntity = false;
+
+      if (!trimmed) return { id: null, answer: EMPTY_PROMPT, entry: null };
+      if (!knowledge || !knowledge.entries || !knowledge.entries.length) {
+        return { id: 'fallback', answer: FALLBACK, entry: null };
+      }
+
+      normalized = normalize(trimmed);
+
+      routed = routeByIntent(normalized);
+      if (routed && routed.answer) return { id: routed.id, answer: routed.answer, entry: routed };
+
+      entityHit = routeByEntity(normalized);
+      if (entityHit && entityHit.entry && entityHit.entry.answer) {
+        return { id: entityHit.entry.id, answer: entityHit.entry.answer, entry: entityHit.entry, via: entityHit.via };
+      }
+
+      disambiguation = routeByDisambiguation(normalized);
+      if (disambiguation && disambiguation.answer) {
+        return { id: disambiguation.id, answer: disambiguation.answer, entry: null };
+      }
+
+      routed = routeByBroadIntent(normalized);
+      if (routed && routed.answer) return { id: routed.id, answer: routed.answer, entry: routed };
+
+      routed = routeBySemantic(normalized);
+      if (routed && routed.answer) return { id: routed.id, answer: routed.answer, entry: routed };
+
+      tokens = tokenize(trimmed);
+      if (!tokens.length) return { id: null, answer: EMPTY_PROMPT, entry: null };
+
+      best = null;
+      second = null;
+      bestScore = 0;
+      secondScore = 0;
+      bestPriority = -1;
 
       knowledge.entries.forEach(function(entry) {
-        var score = scoreEntry(tokens, normalized, entry);
+        var score = scoreEntry(tokens, normalized, entry, context);
         var priority = entry.priority || 1;
         if (score > bestScore) {
           secondScore = bestScore;
@@ -444,23 +595,32 @@
       });
 
       if (best && best.id === 'intro' && !isIntroQuestion(normalized)) {
-        return formatJackAnswer(FALLBACK, null);
+        return { id: 'fallback', answer: FALLBACK, entry: null };
       }
 
       if (best && bestScore >= MIN_SCORE && best.answer) {
         if (isOffTopicQuestion(normalized)) {
-          return formatJackAnswer(FALLBACK, null);
+          return { id: 'fallback', answer: FALLBACK, entry: null };
         }
-        if (bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
-          return formatJackAnswer(FALLBACK, null);
+        viaEntity = hasSpecificEntitySignal(normalized) || scoreContextFollowUp(normalized, best, context) >= 5;
+        if (!viaEntity && bestScore < MIN_CONFIDENT_SCORE && bestScore - secondScore < 2) {
+          return { id: 'fallback', answer: FALLBACK, entry: null };
         }
-        return formatJackAnswer(best.answer, best);
+        if (viaEntity && bestScore < MIN_ALIAS_SCORE) {
+          return { id: 'fallback', answer: FALLBACK, entry: null };
+        }
+        return { id: best.id, answer: best.answer, entry: best };
       }
 
-      return formatJackAnswer(FALLBACK, null);
+      return { id: 'fallback', answer: FALLBACK, entry: null };
     } catch (err) {
-      return formatJackAnswer(FALLBACK, null);
+      return { id: 'fallback', answer: FALLBACK, entry: null };
     }
+  }
+
+  function findAnswer(question, context) {
+    var match = findMatch(question, context || null);
+    return formatJackAnswer(match.answer, match.entry);
   }
 
   function buildEntryMap(data) {
@@ -512,6 +672,9 @@
         knowledge = data;
         entryMap = buildEntryMap(data);
         semanticTopics = data.semanticTopics || null;
+        entityRoutes = data.entityRoutes || null;
+        disambiguationRoutes = data.disambiguationRoutes || null;
+        contextFollowUps = data.contextFollowUps || null;
         recruiterIntents = (data.recruiterIntents || []).slice().sort(function(a, b) {
           return (b.priority || 0) - (a.priority || 0);
         });
@@ -544,6 +707,13 @@
     var isFull = mode === 'full';
     var isOpen = isFull;
     var busy = false;
+    var chatContext = { lastEntryId: null };
+
+    function updateChatContext(match) {
+      if (!match || !match.id || match.id.indexOf('disambiguation:') === 0) return;
+      if (match.id === 'fallback') return;
+      chatContext.lastEntryId = match.id;
+    }
 
     var toggleBtn = root.querySelector('.chat-toggle');
     var panel = root.querySelector('.chat-panel');
@@ -591,7 +761,9 @@
       var typingEl = showTyping();
 
       setTimeout(function() {
-        var reply = findAnswer(q);
+        var match = findMatch(q, chatContext);
+        var reply = formatJackAnswer(match.answer, match.entry);
+        updateChatContext(match);
         if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
         appendMessage('bot', reply);
         busy = false;

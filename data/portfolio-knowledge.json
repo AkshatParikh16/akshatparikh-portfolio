@@ -165,6 +165,33 @@
       "paraphrases": ["best project", "strongest project", "most impressive project", "standout project", "top project"]
     }
   },
+  "entityRoutes": [
+    { "entryId": "experience_uta_cdc", "exact": ["uta career development center", "uta career development", "uta cdc", "career development center"], "aliases": ["cdc", "career development"] },
+    { "entryId": "experience_uta_oit", "exact": ["uta technology department", "uta technology dept", "uta tech department", "uta oit"], "aliases": ["oit"] },
+    { "entryId": "experience_agevole", "exact": ["agevole innovation", "agevole"], "aliases": [] },
+    { "entryId": "experience_cygnux", "exact": ["cygnux softtech", "cygnux"], "aliases": [] },
+    { "entryId": "projects_inspectai", "exact": ["inspectai", "inspect ai"], "aliases": [] },
+    { "entryId": "projects_docchat", "exact": ["docchat", "doc chat"], "aliases": [] },
+    { "entryId": "projects_churn", "exact": ["customer churn prediction", "customer churn", "churn prediction"], "aliases": ["churn"] },
+    { "entryId": "projects_stock", "exact": ["stock market medallion pipeline", "stock medallion pipeline", "stock medallion"], "aliases": ["medallion"] },
+    { "entryId": "projects_ecommerce", "exact": ["e commerce analytics platform", "ecommerce analytics platform", "ecommerce analytics"], "aliases": ["ecommerce"] },
+    { "entryId": "projects_llm_insights", "exact": ["llm business insights pipeline", "llm business insights", "business insights pipeline"], "aliases": [] },
+    { "entryId": "projects_sales_pipeline", "exact": ["transactional sales pipeline", "azure sales pipeline", "transactional sales"], "aliases": [] },
+    { "entryId": "projects_analytics_agent", "exact": ["ai powered analytics agent", "ai analytics agent", "analytics agent"], "aliases": [] },
+    { "entryId": "projects_sun_country", "exact": ["sun country airlines", "sun country", "revenue optimization"], "aliases": [] },
+    { "entryId": "projects_agentic_landing", "exact": ["agentic landing page builder", "landing page builder", "weavehacks"], "aliases": [] },
+    { "entryId": "education", "exact": ["charusat"], "aliases": [] }
+  ],
+  "disambiguationRoutes": [
+    {
+      "token": "uta",
+      "answer": "Akshat had two UTA roles:\n\n• UTA Career Development Center (Data Scientist, May 2025 - Apr 2026)\n• UTA Technology Department (Student Analytics Engineer, Jan - Apr 2026)\n\nWhich one do you want detail on?"
+    }
+  ],
+  "contextFollowUps": {
+    "experience_overview": ["experience_uta_cdc", "experience_uta_oit", "experience_agevole", "experience_cygnux"],
+    "projects_overview": ["projects_inspectai", "projects_docchat", "projects_churn", "projects_stock", "projects_ecommerce", "projects_llm_insights", "projects_sales_pipeline", "projects_analytics_agent", "projects_sun_country", "projects_agentic_landing"]
+  },
   "entries": [
     {
       "id": "sponsorship",
@@ -318,7 +345,7 @@
       "priority": 8,
       "keywords": ["experience", "work", "job", "jobs", "career", "intern", "internship", "role", "roles", "worked", "employer"],
       "phrases": ["work experience", "job history", "where did he work", "where has he worked"],
-      "text": "experience UTA Career Development Center Technology Department Agevole Cygnux Softtech Data Scientist Student Analytics Engineer ML Engineer Intern",
+      "text": "experience work history roles internships data science analytics engineering machine learning employers jobs career",
       "answer": "Akshat has four roles in data science, analytics engineering, and ML:\n\n• Data Scientist, UTA Career Development Center (May 2025 - Apr 2026). ETL, AWS platform, AI assistant.\n• Student Analytics Engineer, UTA Technology Dept (Jan - Apr 2026). Led a 3-person Power BI team.\n• ML Engineer Intern, Agevole Innovation (2023 - 2024). NLP candidate matching.\n• ML Engineer Intern, Cygnux Softtech (2023). PyTorch/XGBoost recommendations.\n\nAsk about a specific company if you want more detail."
     },
     {
@@ -356,7 +383,7 @@
       "priority": 7,
       "keywords": ["project", "projects", "portfolio", "built", "github", "work sample"],
       "phrases": ["best projects", "his projects", "tell me about projects", "what projects"],
-      "text": "projects InspectAI DocChat Customer Churn Stock Market Medallion E-Commerce LLM Business Insights Analytics Engineering Agentic Landing Page",
+      "text": "projects portfolio built github work samples machine learning generative ai data engineering analytics",
       "answer": "Akshat's projects cover ML and GenAI (InspectAI, DocChat, Churn Prediction), data engineering (Stock Medallion Pipeline, E-Commerce Analytics, LLM Business Insights), analytics engineering (Azure Sales Pipeline, AI Analytics Agent, Sun Country Airlines), and agentic AI (Landing Page Builder at WeaveHacks). Ask about any project by name."
     },
     {
