@@ -55,20 +55,59 @@ function normalize(text) {
   return String(text || '').toLowerCase().replace(/[^\w\s@.+-]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function levenshtein(a, b) {
+  const row = [];
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  for (let i = 0; i <= b.length; i++) row[i] = i;
+  for (let i = 1; i <= a.length; i++) {
+    let prev = i;
+    for (let j = 1; j <= b.length; j++) {
+      const val = a[i - 1] === b[j - 1] ? row[j - 1] : Math.min(row[j - 1], row[j], prev) + 1;
+      row[j - 1] = prev;
+      prev = val;
+    }
+    row[b.length] = prev;
+  }
+  return row[b.length];
+}
+
+function fuzzyWordMatch(word, target, maxDist) {
+  if (!word || !target) return false;
+  if (word === target) return true;
+  if (word.length >= 4 && target.length >= 4) {
+    if (word.includes(target) || target.includes(word)) return true;
+    if (levenshtein(word, target) <= maxDist) return true;
+  }
+  return false;
+}
+
+function mentionsSponsorship(normalized) {
+  if (normalized.includes('sponsor') || normalized.includes('sponsorship')) return true;
+  const targets = ['sponsorship', 'sponsor', 'spnorship', 'sponsership', 'sponorship'];
+  return normalized.split(' ').some((word) =>
+    targets.some((target) => fuzzyWordMatch(word, target, 2))
+  );
+}
+
 function tokenize(text) {
   return normalize(text).split(' ').filter((w) => w.length > 1 && !STOP_WORDS[w] && !IGNORE_TOKENS[w]);
 }
 
 function hasTopicSignal(normalized) {
+  if (mentionsSponsorship(normalized)) return true;
   return TOPIC_SIGNALS.some((word) => normalized.indexOf(word) !== -1);
 }
 
 function routeByIntent(normalized) {
+  if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
+    if (entryMap.sponsorship) return entryMap.sponsorship;
+  }
   for (const route of INTENT_ROUTES) {
     for (let j = route.patterns.length - 1; j >= 0; j--) {
       const pattern = route.patterns[j];
       if (normalized.indexOf(pattern) !== -1) {
-        if (route.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && normalized.indexOf('sponsorship') === -1 && normalized.indexOf('sponsor') === -1) {
+        if (route.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) {
           continue;
         }
         if (entryMap[route.id]) return entryMap[route.id];
@@ -121,6 +160,7 @@ function findAnswer(question) {
 
 const tests = [
   { q: 'Will akshat require sponsorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
+  { q: 'will akshat require spnorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Is akshat allowed to work in the USA?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: "What is Akshat's email?", expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'When can he start?', expectId: 'availability', expectSnippet: 'immediately' },

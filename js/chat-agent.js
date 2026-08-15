@@ -66,6 +66,46 @@
       .trim();
   }
 
+  function levenshtein(a, b) {
+    var i, j, prev, val, row = [];
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    for (i = 0; i <= b.length; i++) row[i] = i;
+    for (i = 1; i <= a.length; i++) {
+      prev = i;
+      for (j = 1; j <= b.length; j++) {
+        val = a.charAt(i - 1) === b.charAt(j - 1) ? row[j - 1] : Math.min(row[j - 1], row[j], prev) + 1;
+        row[j - 1] = prev;
+        prev = val;
+      }
+      row[b.length] = prev;
+    }
+    return row[b.length];
+  }
+
+  function fuzzyWordMatch(word, target, maxDist) {
+    if (!word || !target) return false;
+    if (word === target) return true;
+    if (word.length >= 4 && target.length >= 4) {
+      if (word.indexOf(target) !== -1 || target.indexOf(word) !== -1) return true;
+      if (levenshtein(word, target) <= maxDist) return true;
+    }
+    return false;
+  }
+
+  function mentionsSponsorship(normalized) {
+    if (normalized.indexOf('sponsor') !== -1 || normalized.indexOf('sponsorship') !== -1) return true;
+    var words = normalized.split(' ');
+    var targets = ['sponsorship', 'sponsor', 'spnorship', 'sponsership', 'sponorship'];
+    var i, j;
+    for (i = 0; i < words.length; i++) {
+      for (j = 0; j < targets.length; j++) {
+        if (fuzzyWordMatch(words[i], targets[j], 2)) return true;
+      }
+    }
+    return false;
+  }
+
   function tokenize(text) {
     return normalize(text).split(' ').filter(function(w) {
       return w.length > 1 && !STOP_WORDS[w] && !IGNORE_TOKENS[w];
@@ -73,6 +113,7 @@
   }
 
   function hasTopicSignal(normalized) {
+    if (mentionsSponsorship(normalized)) return true;
     return TOPIC_SIGNALS.some(function(word) {
       return normalized.indexOf(word) !== -1;
     });
@@ -80,12 +121,15 @@
 
   function routeByIntent(normalized) {
     var i, j, route, pattern;
+    if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
+      if (entryMap && entryMap.sponsorship) return entryMap.sponsorship;
+    }
     for (i = 0; i < INTENT_ROUTES.length; i++) {
       route = INTENT_ROUTES[i];
       for (j = route.patterns.length - 1; j >= 0; j--) {
         pattern = route.patterns[j];
         if (normalized.indexOf(pattern) !== -1) {
-          if (route.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && normalized.indexOf('sponsorship') === -1 && normalized.indexOf('sponsor') === -1) {
+          if (route.id === 'sponsorship' && normalized.indexOf('authorized') !== -1 && !mentionsSponsorship(normalized)) {
             continue;
           }
           if (entryMap && entryMap[route.id]) return entryMap[route.id];
