@@ -681,6 +681,7 @@
     }
     .chat-panel-head strong { display: block; font-size: 0.92rem; }
     .chat-panel-head span { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .chat-agent-meta { font-size: 0.65rem !important; opacity: 0.85; margin-top: 0.2rem !important; }
     .chat-close {
       background: none; border: none; color: var(--text-muted);
       font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0.15rem 0.35rem;
@@ -762,6 +763,10 @@
     .chat-page-lead {
       text-align: center; color: var(--text-muted); font-size: 0.92rem;
       max-width: 520px; margin: -0.5rem auto 1.5rem;
+    }
+    .chat-page-meta {
+      text-align: center; color: var(--text-muted); font-size: 0.72rem;
+      max-width: 640px; margin: -1rem auto 1.25rem; opacity: 0.85;
     }
 
     body[data-page="chat"] .portfolio-chat[data-mode="widget"] { display: none; }

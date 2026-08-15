@@ -6,7 +6,7 @@ const knowledge = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/portfolio-knowledge.json'), 'utf8')
 );
 
-const FALLBACK = "I don't have that in Akshat's portfolio notes.";
+const FALLBACK = "I don't have that on file.";
 const MIN_CONFIDENT_SCORE = 5;
 
 const IGNORE_TOKENS = { akshat: 1, parikh: 1, jack: 1, he: 1, him: 1, his: 1, she: 1, her: 1 };

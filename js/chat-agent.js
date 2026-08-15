@@ -1,9 +1,9 @@
 (function() {
   var BOT_NAME = 'Jack';
   var BOT_TAGLINE = "Akshat's personal AI assistant";
-  var WELCOME = "Hey — I'm Jack, Akshat's personal AI assistant.\n\nI can help with:\n• Work experience & internships\n• Projects & technical skills\n• Education & hiring details\n• How to reach him\n\nWhat would you like to know?";
-  var FALLBACK = "I don't have that in Akshat's portfolio notes.\n\nBest next step — reach him directly:\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861\n\nI'm Jack — happy to help with experience, projects, skills, or hiring questions.";
-  var EMPTY_PROMPT = "I'm Jack — ask me about Akshat's experience, projects, skills, education, or how to reach him.";
+  var WELCOME = "I'm Jack, Akshat's personal AI assistant.\n\nAsk about his experience, projects, skills, education, or how to reach him.";
+  var FALLBACK = "I don't have that on file.\n\nReach Akshat directly:\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861";
+  var EMPTY_PROMPT = "Ask about Akshat's experience, projects, skills, education, or how to reach him.";
   var STARTERS = [
     "What's his work experience?",
     "Tell me about his best projects",
@@ -186,15 +186,7 @@
 
   function formatJackAnswer(text, entry) {
     var answer = String(text || '').trim();
-    var style;
     if (!answer) return FALLBACK;
-    style = entry && entry.answerStyle ? entry.answerStyle : 'detail';
-    if (style === 'yesno' && answer.indexOf('Yes') !== 0 && answer.indexOf('No') !== 0 && answer.indexOf('Sure') !== 0) {
-      answer = 'Sure — ' + answer.charAt(0).toLowerCase() + answer.slice(1);
-    }
-    if (entry && entry.id === 'intro' && answer.indexOf('Ask me about') !== -1) {
-      answer = answer.replace('Ask me about any specific area and I\'ll go deeper!', 'Want specifics? Ask about experience, projects, or skills.');
-    }
     return answer;
   }
 
@@ -479,6 +471,37 @@
     return map;
   }
 
+  function buildAgentMetaLine(agent) {
+    if (!agent) return '';
+    var parts = [];
+    if (agent.version) parts.push('v' + agent.version);
+    if (agent.license) parts.push(agent.license);
+    if (agent.compatibility) parts.push(agent.compatibility);
+    return parts.join(' · ');
+  }
+
+  function buildAgentToolsLine(agent) {
+    if (!agent || !agent.allowedTools || !agent.allowedTools.length) return '';
+    return 'Tools: ' + agent.allowedTools.join(', ');
+  }
+
+  function applyAgentMeta() {
+    var agent = knowledge && knowledge.agent ? knowledge.agent : null;
+    var metaLine = buildAgentMetaLine(agent);
+    var toolsLine = buildAgentToolsLine(agent);
+    var metaEls = document.querySelectorAll('.chat-agent-meta');
+    var toolsEls = document.querySelectorAll('.chat-agent-tools');
+    var i;
+    for (i = 0; i < metaEls.length; i++) {
+      metaEls[i].textContent = metaLine;
+      metaEls[i].style.display = metaLine ? '' : 'none';
+    }
+    for (i = 0; i < toolsEls.length; i++) {
+      toolsEls[i].textContent = toolsLine;
+      toolsEls[i].style.display = toolsLine ? '' : 'none';
+    }
+  }
+
   function loadKnowledge() {
     return fetch('data/portfolio-knowledge.json')
       .then(function(res) {
@@ -492,6 +515,7 @@
         recruiterIntents = (data.recruiterIntents || []).slice().sort(function(a, b) {
           return (b.priority || 0) - (a.priority || 0);
         });
+        applyAgentMeta();
       })
       .catch(function() {
         knowledge = {
@@ -499,7 +523,7 @@
             id: 'contact',
             priority: 10,
             keywords: ['contact', 'email', 'phone'],
-            answer: "Sure — you can reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He's based in San Jose, CA."
+            answer: "Reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He is based in San Jose, CA."
           }]
         };
         entryMap = buildEntryMap(knowledge);
@@ -619,7 +643,7 @@
       '</button>' +
       '<div class="chat-panel" role="dialog" aria-label="Jack, Akshat\'s personal AI assistant">' +
         '<div class="chat-panel-head">' +
-          '<div><strong>' + BOT_NAME + '</strong><span>' + BOT_TAGLINE + '</span></div>' +
+          '<div><strong>' + BOT_NAME + '</strong><span>' + BOT_TAGLINE + '</span><span class="chat-agent-meta"></span></div>' +
           '<button type="button" class="chat-close" aria-label="Close chat">&times;</button>' +
         '</div>' +
         '<div class="chat-messages" aria-live="polite"></div>' +
