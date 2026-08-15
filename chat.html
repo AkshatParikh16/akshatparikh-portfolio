@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Publications | Akshat Parikh</title>
+  <title>Ask Akshat | Akshat Parikh</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="publications">
+<body data-page="chat">
 
   <div class="scroll-progress" id="scrollProgress"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
@@ -31,23 +31,23 @@
   </nav>
 
   <main>
-    <section id="publications">
-      <h2 class="section-heading caps reveal">Publications</h2>
-      <div class="pub-full">
-        <article class="card-box reveal">
-          <p class="card-title">Number Plate Detection and Recognition using OpenCV</p>
-          <p class="pub-venue">IEEE Xplore · Scopus</p>
-          <div class="card-tags">
-            <span>OpenCV</span><span>Python</span><span>Tesseract</span><span>Machine Learning</span>
+    <section id="chat-page">
+      <h2 class="section-heading caps reveal">Ask Akshat</h2>
+      <p class="chat-page-lead reveal">Ask about experience, projects, skills, education, or how to get in touch. Answers come from this portfolio only.</p>
+      <div id="portfolio-chat-full" class="portfolio-chat reveal" data-mode="full">
+        <div class="chat-panel is-open" role="region" aria-label="Portfolio assistant">
+          <div class="chat-panel-head">
+            <div><strong>Portfolio Assistant</strong><span>Answers from this site · No account needed</span></div>
           </div>
-          <ul>
-            <li>Conducted a comprehensive literature review on image processing techniques, analyzing several research papers to identify and evaluate existing methodologies.</li>
-            <li>Engineered an image processing pipeline using OpenCV, incorporating grayscale conversion, noise reduction, smoothing, and Canny edge detection, resulting in a 1.5x enhancement in data extraction efficiency.</li>
-            <li>Implemented advanced contour detection and edge analysis techniques to optimize license plate segmentation and character recognition, reducing data processing needs and improving accuracy by 20%.</li>
-            <li>Leveraged machine learning algorithms and Python Tesseract to extract and decode license plate text, achieving an overall model accuracy of 83% through effective data integration.</li>
-          </ul>
-          <a href="https://ieeexplore.ieee.org/abstract/document/10467269" class="btn btn-primary" target="_blank" rel="noopener">Show publication</a>
-        </article>
+          <div class="chat-messages" aria-live="polite"></div>
+          <div class="chat-starters"></div>
+          <form class="chat-form">
+            <input type="text" class="chat-input" placeholder="Ask about experience, projects, skills…" maxlength="500" autocomplete="off" aria-label="Your question">
+            <button type="submit" class="chat-send" aria-label="Send message">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   </main>

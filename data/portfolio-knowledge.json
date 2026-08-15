@@ -1,0 +1,226 @@
+{
+  "entries": [
+    {
+      "id": "intro",
+      "keywords": ["who", "about", "akshat", "parikh", "introduce", "introduction", "background", "summary", "overview", "graduate", "bay area"],
+      "text": "Akshat Parikh Data Scientist ML Engineer MS graduate Data Science AI Bay Area software engineering machine learning generative AI agentic AI data engineering",
+      "answer": "Akshat Parikh is a recent MS graduate in Data Science & AI (May 2026), based in the Bay Area. He has experience in software engineering, machine learning, generative AI, agentic AI, and data engineering."
+    },
+    {
+      "id": "contact",
+      "keywords": ["contact", "email", "phone", "call", "reach", "hire", "linkedin", "github", "connect", "location", "address", "san jose"],
+      "text": "contact email phone reach hire linkedin github location San Jose California",
+      "answer": "You can reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He is based in San Jose, CA. LinkedIn: linkedin.com/in/akshatp2002 · GitHub: github.com/AkshatParikh16"
+    },
+    {
+      "id": "experience_overview",
+      "keywords": ["experience", "work", "job", "jobs", "career", "employer", "intern", "internship", "role", "roles", "worked"],
+      "text": "experience work UTA Career Development Center Technology Department Agevole Cygnux Softtech Data Scientist Student Analytics Engineer ML Engineer Intern",
+      "answer": "Akshat's experience includes:\n\n• Data Scientist (Student Assistant) at UTA Career Development Center (May 2025 – Apr 2026) — ETL pipelines, employer intelligence platform on AWS, AI assistant integration.\n\n• Student Analytics Engineer at UTA Technology Department (Jan 2026 – Apr 2026) — Led a 3-member team building Power BI dashboards, saving 80+ hours/month.\n\n• Machine Learning Engineer Intern at Agevole Innovation (Sept 2023 – May 2024) — NLP candidate matching, SBERT/TF-IDF evaluation, Flask APIs.\n\n• ML Engineer Intern at Cygnux Softtech (Apr 2023 – Jun 2023) — PyTorch/XGBoost recommendation model, MLflow inference rules."
+    },
+    {
+      "id": "experience_uta_cdc",
+      "keywords": ["uta", "cdc", "career development", "handshake", "hubspot", "employer intelligence", "data scientist student assistant"],
+      "text": "UTA Career Development Center Data Scientist Student Assistant ETL Handshake HubSpot PostgreSQL AWS Power BI",
+      "answer": "As Data Scientist (Student Assistant) at UTA Career Development Center (May 2025 – Apr 2026), Akshat automated ETL pipelines centralizing 500K+ records from Handshake and HubSpot into PostgreSQL on AWS, built an employer intelligence platform on EC2, integrated an AI Assistant (cutting inquiry response time by 40%), and drove a 12% increase in event participation through data-driven campaign redesign."
+    },
+    {
+      "id": "experience_uta_oit",
+      "keywords": ["student analytics engineer", "technology department", "oit", "power bi", "lab performance"],
+      "text": "Student Analytics Engineer UTA Technology Department Power BI dashboard lab performance OIT",
+      "answer": "As Student Analytics Engineer at UTA Technology Department (Jan 2026 – Apr 2026), Akshat led a 3-member team to deliver a Power BI reporting system unifying fragmented Excel/PDF files into a real-time dashboard, saving 80+ hours of manual data management per month, and presented lab performance metrics biweekly to OIT Managers."
+    },
+    {
+      "id": "experience_agevole",
+      "keywords": ["agevole", "nlp", "candidate matching", "sbert", "spacy", "nltk", "flask", "recruitment"],
+      "text": "Agevole Innovation ML Engineer Intern NLP candidate matching spaCy NLTK SBERT TF-IDF Flask resumes",
+      "answer": "At Agevole Innovation (Sept 2023 – May 2024), Akshat contributed to an NLP-based candidate matching system with spaCy/NLTK preprocessing, evaluated SBERT vs TF-IDF across 10K+ resumes, implemented Flask API endpoints for live job postings, and collaborated with recruiters to reduce early-stage candidate drop-off."
+    },
+    {
+      "id": "experience_cygnux",
+      "keywords": ["cygnux", "softtech", "recommendation", "pytorch", "xgboost", "mlflow", "retail"],
+      "text": "Cygnux Softtech ML Engineer Intern PyTorch XGBoost MLflow recommendation retail inventory",
+      "answer": "At Cygnux Softtech (Apr 2023 – Jun 2023), Akshat built an automated recommendation model using PyTorch and XGBoost for retail clients, increasing product matching accuracy by 12%, and embedded shipping/stock rules into inference code using MLflow."
+    },
+    {
+      "id": "education",
+      "keywords": ["education", "degree", "degrees", "masters", "master", "bachelor", "bachelors", "gpa", "university", "uta", "charusat", "school", "studied"],
+      "text": "education Master's Data Science UTA Charusat Bachelor Information Technology GPA 4.00 3.98",
+      "answer": "Akshat holds a Master's in Data Science from The University of Texas at Arlington (Aug 2024 – May 2026, GPA 4.00/4.00) and a Bachelor's in Information Technology from Charusat University (Sept 2020 – May 2024, GPA 3.98/4.00). Coursework spans deep learning, NLP, GenAI, big data, data engineering, and statistics."
+    },
+    {
+      "id": "skills",
+      "keywords": ["skill", "skills", "tech stack", "technologies", "tools", "programming", "python", "sql", "langgraph", "aws", "pytorch", "tensorflow", "knows", "proficient"],
+      "text": "skills Python SQL R PyTorch TensorFlow LangChain LangGraph FastAPI AWS GCP Azure Docker Kubernetes MLflow Power BI PostgreSQL Spark Kafka Airflow dbt",
+      "answer": "Akshat works with Python, SQL, R, and Go. Key areas include: ML/DL (PyTorch, TensorFlow, XGBoost, scikit-learn), Generative AI (LangChain, LangGraph, RAG, LLMs), Data Engineering (Spark, Kafka, Airflow, dbt, AWS Glue/S3/Athena), Databases (PostgreSQL, BigQuery, DuckDB, Pinecone), Visualization (Power BI, Tableau), and MLOps (Docker, Kubernetes, MLflow, GitHub Actions). See the Skills section on the home page for the full list."
+    },
+    {
+      "id": "projects_overview",
+      "keywords": ["project", "projects", "portfolio", "built", "github", "work sample"],
+      "text": "projects InspectAI DocChat Customer Churn Stock Market Medallion E-Commerce LLM Business Insights Analytics Engineering Agentic Landing Page",
+      "answer": "Akshat's projects span ML/GenAI (InspectAI, DocChat, Customer Churn Prediction), Data Engineering (Stock Market Medallion Pipeline, E-Commerce Analytics, LLM Business Insights Pipeline), Analytics Engineering (Transactional Sales Pipeline, AI-Powered Analytics Agent, Sun Country Airlines Revenue Optimization), and Agentic AI (Agentic Landing Page Builder at WeaveHacks). Visit the Projects page or ask about a specific project by name."
+    },
+    {
+      "id": "projects_inspectai",
+      "keywords": ["inspectai", "inspect ai", "testing", "llm judge", "qa", "personas", "langgraph inspect"],
+      "text": "InspectAI LangGraph FastAPI DuckDB LiteLLM Prometheus Streamlit LLM testing QA personas",
+      "answer": "InspectAI is a production-ready AI testing pipeline using LangGraph, FastAPI, DuckDB, and LiteLLM. It generates dynamic test personas, uses a randomized 3-judge LLM-as-judge panel for unbiased evaluation, and performs failure analysis with fix recommendations — reducing manual QA from hours to minutes. GitHub: github.com/AkshatParikh16/InspectAI · Demo: inspectai-1.onrender.com"
+    },
+    {
+      "id": "projects_docchat",
+      "keywords": ["docchat", "doc chat", "rag", "llama3", "pinecone", "chatbot", "documents"],
+      "text": "DocChat RAG LLaMA3 LangChain Pinecone HuggingFace FastAPI document chatbot",
+      "answer": "DocChat is a RAG-based AI chatbot using LLaMA3, Pinecone, HuggingFace embeddings, and LangChain. It supports Document Analysis, Comparison, and Multi-Document Chat via a FastAPI service with confidence-based filtering. GitHub: github.com/AkshatParikh16/DocChat"
+    },
+    {
+      "id": "projects_churn",
+      "keywords": ["churn", "customer churn", "xgboost", "lightgbm", "catboost", "mlflow", "classification"],
+      "text": "Customer Churn Prediction XGBoost LightGBM CatBoost MLflow Docker AWS EC2 FastAPI GitHub Actions",
+      "answer": "Customer Churn Prediction: Akshat trained classification models with MLflow tracking — XGBoost achieved 0.85 ROC-AUC and 0.78 churn recall on imbalanced data. Deployed as a production API on AWS EC2 with Docker, FastAPI, and GitHub Actions CI/CD. GitHub: github.com/AkshatParikh16/Customer-Churn-Prediction"
+    },
+    {
+      "id": "projects_stock",
+      "keywords": ["stock", "medallion", "ohlcv", "glue", "step functions", "athena", "market pipeline"],
+      "text": "Stock Market Medallion Pipeline AWS S3 Glue Step Functions Athena SNS Pandera OHLCV",
+      "answer": "Stock Market Medallion Pipeline: A cloud-native AWS pipeline (S3, Glue, Step Functions) ingesting daily OHLCV data for 40 companies/ETFs with Pandera validation, quarantining invalid records, cataloging in Athena, and SNS-based failure alerts. GitHub: github.com/AkshatParikh16/stock-medallion-pipeline"
+    },
+    {
+      "id": "projects_ecommerce",
+      "keywords": ["ecommerce", "e-commerce", "pricing", "kafka", "clickhouse", "clickstream", "streaming"],
+      "text": "E-Commerce Analytics Pricing Platform FastAPI Kafka PySpark ClickHouse dbt Airflow",
+      "answer": "E-Commerce Analytics and Pricing Platform: Real-time pipeline with FastAPI + Kafka for sub-second clickstream processing, plus a PySpark Streaming pricing engine with ClickHouse, orchestrated via dbt and Airflow."
+    },
+    {
+      "id": "projects_llm_insights",
+      "keywords": ["llm business insights", "business insights pipeline", "gemini flash", "airflow elt"],
+      "text": "LLM Business Insights Pipeline Airflow PostgreSQL Gemini Flash MLflow Streamlit Pandera ELT",
+      "answer": "LLM Business Insights Pipeline: ELT with Apache Airflow through bronze/silver/gold layers with Pandera validation, plus Gemini Flash narrative summaries with a verification layer and MLflow prompt tracking. GitHub: github.com/AkshatParikh16/llm-business-insights-pipeline"
+    },
+    {
+      "id": "projects_sales_pipeline",
+      "keywords": ["transactional sales", "databricks", "adls", "delta parquet", "data factory", "adf", "azure pipeline"],
+      "text": "Transactional Sales Data Pipeline Azure Databricks PySpark Data Factory ADLS Delta Parquet",
+      "answer": "Transactional Sales Data Pipeline: Batch ETL in Azure Databricks/PySpark ingesting 1M+ records from ADLS into Delta Parquet, orchestrated via Azure Data Factory with automated logging, schema validation, and fault tolerance."
+    },
+    {
+      "id": "projects_analytics_agent",
+      "keywords": ["analytics agent", "looker", "lookml", "bigquery", "natural language dashboard"],
+      "text": "AI-Powered Analytics Agent LangGraph Gemini BigQuery LookML Looker natural language dashboards",
+      "answer": "AI-Powered Analytics Agent: An end-to-end LangGraph + Gemini agent translating natural-language business questions into Looker dashboards, with a Python validation layer for AI-generated filters before Looker API execution on BigQuery."
+    },
+    {
+      "id": "projects_sun_country",
+      "keywords": ["sun country", "airlines", "revenue optimization", "k-means", "clustering", "crm", "segmentation"],
+      "text": "Revenue Optimization Sun Country Airlines K-Means clustering Power BI CRM segmentation",
+      "answer": "Revenue Optimization for Sun Country Airlines: K-means clustering on CRM data for consumer segmentation, with Power BI visualizations that drove revenue increases and reduced campaign costs."
+    },
+    {
+      "id": "projects_agentic_landing",
+      "keywords": ["agentic landing page", "weavehacks", "ceo agent", "landing page builder", "weave"],
+      "text": "Agentic Landing Page Builder WeaveHacks LangGraph OpenAI W&B Weave CEO agent sub-agents",
+      "answer": "Agentic Landing Page Builder (WeaveHacks): A LangGraph CEO agent orchestrating 5 specialized sub-agents across OpenAI models with W&B Weave observability for token usage and execution traces. GitHub: github.com/AkshatParikh16/Agentic-Landing-Page-Builder-WeaveHacks-4- · Demo: agentic-landing-page-builder-weavehacks-4.onrender.com"
+    },
+    {
+      "id": "publications",
+      "keywords": ["publication", "publications", "paper", "papers", "ieee", "scopus", "research", "opencv", "license plate", "number plate"],
+      "text": "publication IEEE Scopus Number Plate Detection Recognition OpenCV Tesseract 83% accuracy",
+      "answer": "Akshat published \"Number Plate Detection and Recognition using OpenCV\" in IEEE Xplore (Scopus). The work uses OpenCV image processing and Python Tesseract OCR, achieving 83% model accuracy with a 20% improvement in segmentation accuracy. Link: ieeexplore.ieee.org/abstract/document/10467269"
+    },
+    {
+      "id": "resume",
+      "keywords": ["resume", "cv", "curriculum vitae", "download resume", "pdf"],
+      "text": "resume CV download PDF resume page",
+      "answer": "Akshat's resume is available on the Resume page (resume.html) where you can view and download the PDF directly."
+    },
+    {
+      "id": "open_to_work",
+      "keywords": ["open", "available", "looking", "job search", "opportunities", "hiring", "interested", "connect", "collaborate", "roles", "position"],
+      "text": "open connecting collaborating AI Data Science opportunities Bay Area graduate May 2026",
+      "answer": "Akshat is open to connecting, collaborating, and discussing opportunities in AI and Data Science. He is a recent MS graduate (May 2026) based in the Bay Area. For specific role or availability questions, reach out at akshat.sparikh@gmail.com or (408) 637-9861."
+    },
+    {
+      "id": "production_deployment",
+      "keywords": ["production", "deploy", "deployment", "mlops", "ci cd", "cicd", "docker", "kubernetes", "api", "productionize", "ship", "serve"],
+      "text": "production deployment MLOps Docker Kubernetes FastAPI AWS EC2 GitHub Actions MLflow Flask inference",
+      "answer": "Akshat has production deployment experience across several projects: Customer Churn Prediction deployed on AWS EC2 with Docker, FastAPI, and GitHub Actions CI/CD; Flask APIs at Agevole for live job recommendations; MLflow-managed inference at Cygnux Softtech; and InspectAI as a production-ready full-stack testing pipeline on Render."
+    },
+    {
+      "id": "leadership",
+      "keywords": ["leadership", "lead", "led", "team", "manage", "managed", "mentor", "mentoring", "peer mentor", "stakeholder"],
+      "text": "leadership team lead 3-member Power BI peer mentor student advisory board stakeholder presentations",
+      "answer": "Akshat has leadership experience including leading a 3-member team to deliver a Power BI reporting system at UTA Technology Department, serving as Peer Mentor and Student Advisory Board member at UTA, hosting events at the Career Development Center, and presenting biweekly to OIT Managers."
+    },
+    {
+      "id": "genai_experience",
+      "keywords": ["generative ai", "genai", "gen ai", "llm", "llms", "rag", "agentic", "langchain", "langgraph", "prompt", "chatbot", "gemini", "openai", "claude"],
+      "text": "generative AI GenAI LLM RAG LangChain LangGraph agentic AI InspectAI DocChat Gemini OpenAI multi-agent",
+      "answer": "Akshat has strong GenAI experience: InspectAI (LangGraph LLM testing with LLM-as-judge), DocChat (RAG with LLaMA3/Pinecone), Agentic Landing Page Builder (multi-agent LangGraph), LLM Business Insights Pipeline (Gemini Flash), AI-Powered Analytics Agent (LangGraph + Gemini + Looker), and AI Assistant integration at UTA CDC."
+    },
+    {
+      "id": "data_engineering_experience",
+      "keywords": ["data engineering", "data engineer", "etl", "elt", "pipeline", "pipelines", "airflow", "spark", "pyspark", "dbt", "medallion", "warehouse"],
+      "text": "data engineering ETL ELT pipelines Airflow Spark PySpark dbt medallion AWS Glue Azure Databricks Kafka",
+      "answer": "Akshat's data engineering experience includes ETL pipelines at UTA CDC (500K+ records, Handshake/HubSpot → PostgreSQL/AWS), Stock Market Medallion Pipeline (AWS Glue, Step Functions, Athena), E-Commerce Analytics (Kafka, PySpark, dbt, Airflow), LLM Business Insights ELT (Airflow, Pandera), and Azure Databricks batch ETL (1M+ records, ADF)."
+    },
+    {
+      "id": "nlp_experience",
+      "keywords": ["nlp", "natural language", "spacy", "nltk", "sbert", "tf-idf", "ner", "tokenization", "embeddings", "semantic"],
+      "text": "NLP natural language spaCy NLTK SBERT TF-IDF NER tokenization embeddings semantic search DocChat Agevole",
+      "answer": "Akshat's NLP experience includes candidate matching at Agevole (spaCy, NLTK, SBERT vs TF-IDF on 10K+ resumes), DocChat RAG with HuggingFace embeddings, and coursework/projects in NLP, semantic search, and transformer models."
+    },
+    {
+      "id": "cloud_aws",
+      "keywords": ["aws", "amazon web services", "s3", "ec2", "rds", "glue", "athena", "step functions", "sns", "amazon"],
+      "text": "AWS S3 EC2 RDS Glue Athena Step Functions SNS ECR cloud",
+      "answer": "Akshat has hands-on AWS experience: S3, RDS, and EC2 at UTA CDC for ETL and employer intelligence; Glue, Step Functions, Athena, and SNS in the Stock Market Medallion Pipeline; EC2/ECR for Customer Churn Prediction deployment."
+    },
+    {
+      "id": "cloud_azure",
+      "keywords": ["azure", "databricks", "adf", "data factory", "adls", "microsoft cloud"],
+      "text": "Azure Databricks Data Factory ADLS Delta Lake Microsoft cloud",
+      "answer": "Akshat has Azure experience through the Transactional Sales Data Pipeline: batch ETL in Azure Databricks with PySpark, ADLS ingestion, Delta Parquet optimization, and orchestration via Azure Data Factory with schema validation and fault tolerance."
+    },
+    {
+      "id": "highlight_project",
+      "keywords": ["best", "strongest", "highlight", "impressive", "proud", "favorite", "top", "notable", "standout"],
+      "text": "best project highlight InspectAI production LangGraph testing CDC ETL 500K records",
+      "answer": "Standout work includes InspectAI (production GenAI testing pipeline with LLM-as-judge), UTA CDC data platform (500K+ record ETL + AI assistant, 40% faster inquiry response), and Customer Churn Prediction (0.85 ROC-AUC model deployed on AWS with full CI/CD). Ask about any project by name for details."
+    },
+    {
+      "id": "work_authorization",
+      "keywords": ["visa", "sponsorship", "work authorization", "authorized", "citizen", "green card", "h1b", "opt", "cpt", "eligible to work", "legally authorized", "us work"],
+      "text": "work authorization authorized United States eligible legally",
+      "answer": "Yes — Akshat is authorized to work in the United States."
+    },
+    {
+      "id": "availability",
+      "keywords": ["start date", "availability", "available when", "notice period", "join", "start working", "how soon", "immediately", "when can he start", "when can you start"],
+      "text": "availability start date immediately available May 2026 graduate ready",
+      "answer": "Akshat is available to start immediately. He completed his MS in Data Science & AI in May 2026 and is ready to begin as soon as needed."
+    },
+    {
+      "id": "salary",
+      "keywords": ["salary", "compensation", "pay", "rate", "expectations", "offer", "package", "how much"],
+      "text": "salary compensation expectations role responsibilities",
+      "answer": "Salary depends on the right role and responsibilities. Akshat is happy to discuss compensation once you connect with him directly at akshat.sparikh@gmail.com or (408) 637-9861."
+    },
+    {
+      "id": "relocation",
+      "keywords": ["relocate", "relocation", "move", "moving", "relocate", "other city", "other state", "willing to move"],
+      "text": "relocation relocate open opportunity right role",
+      "answer": "Akshat is open to relocation wherever the right opportunity is."
+    },
+    {
+      "id": "remote_hybrid",
+      "keywords": ["remote", "hybrid", "on-site", "onsite", "in office", "work from home", "wfh", "work schedule", "office"],
+      "text": "remote hybrid on-site work schedule flexible in office work from home",
+      "answer": "Akshat is flexible on work arrangements — remote, hybrid, and on-site all work for him."
+    },
+    {
+      "id": "references",
+      "keywords": ["reference", "references", "referee", "supervisor", "recommendation", "recommend", "professional reference", "who can i contact"],
+      "text": "references professional David Powers Christopher Templeton Christian Barnhill UTA supervisor",
+      "answer": "Professional references:\n\n• David Powers — Assistant Director of Internships, UTA Career Development Center · david.powers@uta.edu · (817) 878-1263 · Direct supervisor (May 2025 – Apr 2026)\n\n• Christopher Templeton — Lead IT Analyst, UTA Office of Information Technology · christopher.templeton@uta.edu · Supervisor on UTA OIT Capstone / Student Analytics Engineer role (Jan – Apr 2026)\n\n• Christian Barnhill — Manager of Virtual Operation and Technology, UTA Office of Admissions · christian.barnhill@uta.edu · Supervisor as Student Assistant (Oct 2024 – Aug 2025)\n\nFor additional details, contact Akshat at akshat.sparikh@gmail.com or (408) 637-9861."
+    }
+  ]
+}

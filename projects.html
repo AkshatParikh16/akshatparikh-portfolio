@@ -23,6 +23,7 @@
         <li><a href="experience.html" data-nav="experience">Experience</a></li>
         <li><a href="projects.html" data-nav="projects">Projects</a></li>
         <li><a href="publications.html" data-nav="publications">Publications</a></li>
+        <li><a href="chat.html" data-nav="chat">Ask Akshat</a></li>
         <li><a href="contact.html" data-nav="contact">Let's Connect</a></li>
       </ul>
       <a href="resume.html" class="nav-resume" data-nav="resume">Resume</a>
@@ -35,6 +36,7 @@
       <div class="project-filters reveal" role="tablist" aria-label="Project categories">
         <button type="button" class="project-filter active" role="tab" aria-selected="true" data-filter="ml-ds-genai">ML, DS, and GenAI</button>
         <button type="button" class="project-filter" role="tab" aria-selected="false" data-filter="de-analytics">Data Engineering and Analytics</button>
+        <button type="button" class="project-filter" role="tab" aria-selected="false" data-filter="analytics-engineering">Analytics Engineering</button>
         <button type="button" class="project-filter" role="tab" aria-selected="false" data-filter="agentic">Agentic AI</button>
       </div>
       <div class="projects-stack">
@@ -161,16 +163,45 @@
             </ul>
           </article>
 
+        </div>
+
+        <div class="project-category reveal" data-project-category="analytics-engineering">
+
           <article class="card-box reveal">
             <div class="project-header">
-              <h3 class="project-title">Retail Customer and Revenue Analytics</h3>
+              <h3 class="project-title">Transactional Sales Data Pipeline</h3>
             </div>
             <div class="card-tags project-stack">
-              <span>Python</span><span>SQL</span><span>dbt</span><span>DuckDB</span><span>Power BI</span>
+              <span>Azure Databricks</span><span>PySpark</span><span>Data Factory</span><span>Data Lake Storage</span><span>SQL</span>
             </div>
             <ul>
-              <li>Orchestrated an end-to-end data pipeline processing 1M+ transactions across 5,900 customers with automated data quality checks, structuring them into a star schema for business decisions.</li>
-              <li>Applied RFM segmentation to identify the top revenue segment, surfacing insights via dashboard to inform retention strategy.</li>
+              <li>Constructed a scalable batch ETL pipeline in Azure Databricks using PySpark to ingest 1M+ records from Azure Data Lake Storage (ADLS), converting raw CSVs into optimized Delta Parquet formats to improve storage efficiency.</li>
+              <li>Orchestrated multi-stage workflows in Azure Data Factory (ADF) with automated logging and schema validation, establishing built-in fault tolerance to eliminate downstream data corruption.</li>
+            </ul>
+          </article>
+
+          <article class="card-box reveal">
+            <div class="project-header">
+              <h3 class="project-title">AI-Powered Analytics Agent</h3>
+            </div>
+            <div class="card-tags project-stack">
+              <span>Python</span><span>LangGraph</span><span>Google Gemini</span><span>BigQuery</span><span>LookML</span><span>Looker</span>
+            </div>
+            <ul>
+              <li>Developed an end-to-end AI agent using LangGraph and Gemini to translate natural-language business questions into Looker dashboards, reducing executive data request turnaround from days to seconds.</li>
+              <li>Implemented a Python validation layer to verify AI-generated filters before execution, preventing runtime errors prior to Looker API execution while safeguarding enterprise-governed BigQuery ML insights.</li>
+            </ul>
+          </article>
+
+          <article class="card-box reveal">
+            <div class="project-header">
+              <h3 class="project-title">Revenue Optimization for Sun Country Airlines</h3>
+            </div>
+            <div class="card-tags project-stack">
+              <span>Python</span><span>K-Means Clustering</span><span>Power BI</span><span>CRM Data</span>
+            </div>
+            <ul>
+              <li>Executed K-means clustering in Python on CRM data for consumer segmentation, then built Power BI visualizations, driving a revenue increase and reduction in campaign costs.</li>
             </ul>
           </article>
         </div>
@@ -228,5 +259,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="js/main.js"></script>
+  <script src="js/chat-agent.js"></script>
 </body>
 </html>
