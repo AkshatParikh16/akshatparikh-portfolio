@@ -19,10 +19,17 @@
       ]
     },
     "contact": {
-      "terms": ["contact", "email", "phone", "linkedin", "github", "reach", "call", "connect", "location", "address"],
+      "terms": ["contact", "email", "linkedin", "github", "reach", "connect", "location", "address"],
       "paraphrases": [
         "get in touch", "reach out", "reach him", "contact him", "how to contact",
-        "best email", "email address", "phone number", "where is he based", "where is he located"
+        "best email", "email address", "where is he based", "where is he located"
+      ]
+    },
+    "phone": {
+      "terms": ["phone", "call", "telephone", "mobile", "cell", "number", "dial"],
+      "paraphrases": [
+        "phone number", "can i call", "call him", "give me a call", "ring him",
+        "what is his number", "what's his number", "contact number"
       ]
     },
     "salary": {
@@ -133,10 +140,18 @@
       "answer": "Sure — yes, Akshat is authorized to work in the United States."
     },
     {
+      "id": "phone",
+      "priority": 11,
+      "keywords": ["phone", "call", "telephone", "mobile", "cell", "number", "dial", "ring"],
+      "phrases": ["phone number", "can i call", "call him", "give me a call", "what is his number", "contact number"],
+      "text": "phone call telephone mobile number dial reach by phone",
+      "answer": "Sure — you can call Akshat at (408) 637-9861."
+    },
+    {
       "id": "contact",
       "priority": 10,
-      "keywords": ["contact", "email", "phone", "call", "reach", "linkedin", "github", "connect", "location", "address", "san jose"],
-      "phrases": ["get in touch", "reach him", "contact him", "email address", "phone number"],
+      "keywords": ["contact", "email", "reach", "linkedin", "github", "connect", "location", "address", "san jose"],
+      "phrases": ["get in touch", "reach him", "contact him", "email address", "how to contact"],
       "text": "contact email phone reach linkedin github location San Jose California",
       "answer": "Happy to help — you can reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He's based in San Jose, CA.\n\nLinkedIn: linkedin.com/in/akshatp2002 · GitHub: github.com/AkshatParikh16"
     },

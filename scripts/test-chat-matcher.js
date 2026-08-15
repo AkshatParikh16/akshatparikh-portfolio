@@ -19,7 +19,8 @@ const TOPIC_SIGNALS = [
 const INTENT_ROUTES = [
   { id: 'sponsorship', patterns: ['require sponsorship', 'need sponsorship', 'visa sponsorship', 'need visa', 'require visa', 'need sponsor', 'require sponsor', 'sponsorship'] },
   { id: 'work_authorization', patterns: ['allowed to work', 'authorized to work', 'eligible to work', 'work authorization', 'legally authorized', 'permitted to work', 'work in usa', 'work in us', 'work in america', 'work in united states', 'authorized', 'legally work'] },
-  { id: 'contact', patterns: ['email', 'phone number', 'phone', 'linkedin', 'github', 'get in touch', 'reach him', 'contact him', 'where is he', 'location', 'san jose'] },
+  { id: 'phone', patterns: ['phone number', 'can i call', 'call him', 'give me a call', 'what is his number', 'contact number', 'telephone', 'mobile number'] },
+  { id: 'contact', patterns: ['email', 'linkedin', 'github', 'get in touch', 'reach him', 'contact him', 'where is he', 'location', 'san jose', 'how to contact'] },
   { id: 'salary', patterns: ['salary', 'compensation', 'pay rate', 'how much', 'pay expectation', 'salary expectation'] },
   { id: 'references', patterns: ['reference', 'references', 'supervisor', 'recommendation', 'who can i contact about him'] },
   { id: 'availability', patterns: ['start date', 'when can he start', 'when can start', 'how soon', 'available to start', 'join date', 'notice period'] },
@@ -83,6 +84,12 @@ function fuzzyWordMatch(word, target, maxDist) {
     if (levenshtein(word, target) <= maxDist) return true;
   }
   return false;
+}
+
+function isPhoneQuestion(normalized) {
+  if (normalized === 'call' || normalized === 'phone') return true;
+  const signals = ['phone number', 'can i call', 'call him', 'give me a call', 'ring him', 'telephone', 'mobile number', 'what is his number', 'what s his number', 'contact number'];
+  return signals.some((signal) => normalized.indexOf(signal) !== -1);
 }
 
 function isIntroQuestion(normalized) {
@@ -171,6 +178,7 @@ function routeBySemantic(normalized) {
     if (waScore >= bestScore - 1) bestId = 'work_authorization';
   }
   if (bestId === 'intro' && !isIntroQuestion(normalized)) return null;
+  if (bestId === 'contact' && isPhoneQuestion(normalized) && entryMap.phone) return entryMap.phone;
   if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
     bestId = 'remote_hybrid';
   }
@@ -193,6 +201,7 @@ function routeByIntent(normalized) {
   if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
     if (entryMap.sponsorship) return entryMap.sponsorship;
   }
+  if (isPhoneQuestion(normalized) && entryMap.phone) return entryMap.phone;
   for (const route of INTENT_ROUTES) {
     for (let j = route.patterns.length - 1; j >= 0; j--) {
       const pattern = route.patterns[j];
@@ -283,6 +292,8 @@ const tests = [
   { q: 'Is akshat allowed to work in the USA?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: 'Can he legally work in the United States?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },
   { q: "What is Akshat's email?", expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
+  { q: 'Call?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
+  { q: 'Can I call him?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
   { q: 'How do I reach out to him?', expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'When can he start?', expectId: 'availability', expectSnippet: 'immediately' },
   { q: 'How soon can he join the team?', expectId: 'availability', expectSnippet: 'immediately' },

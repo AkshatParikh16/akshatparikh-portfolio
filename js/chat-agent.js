@@ -21,10 +21,21 @@
     'remote', 'hybrid', 'relocate', 'start', 'availability', 'churn', 'langgraph', 'aws', 'azure'
   ];
 
+  function isPhoneQuestion(normalized) {
+    if (normalized === 'call' || normalized === 'phone') return true;
+    var signals = ['phone number', 'can i call', 'call him', 'give me a call', 'ring him', 'telephone', 'mobile number', 'what is his number', 'what s his number', 'contact number'];
+    var i;
+    for (i = 0; i < signals.length; i++) {
+      if (normalized.indexOf(signals[i]) !== -1) return true;
+    }
+    return false;
+  }
+
   var INTENT_ROUTES = [
     { id: 'sponsorship', patterns: ['require sponsorship', 'need sponsorship', 'visa sponsorship', 'need visa', 'require visa', 'need sponsor', 'require sponsor', 'sponsorship'] },
     { id: 'work_authorization', patterns: ['allowed to work', 'authorized to work', 'eligible to work', 'work authorization', 'legally authorized', 'permitted to work', 'work in usa', 'work in us', 'work in america', 'work in united states', 'authorized', 'legally work'] },
-    { id: 'contact', patterns: ['email', 'phone number', 'phone', 'linkedin', 'github', 'get in touch', 'reach him', 'contact him', 'where is he', 'location', 'san jose'] },
+    { id: 'phone', patterns: ['phone number', 'can i call', 'call him', 'give me a call', 'what is his number', 'contact number', 'telephone', 'mobile number'] },
+    { id: 'contact', patterns: ['email', 'linkedin', 'github', 'get in touch', 'reach him', 'contact him', 'where is he', 'location', 'san jose', 'how to contact'] },
     { id: 'salary', patterns: ['salary', 'compensation', 'pay rate', 'how much', 'pay expectation', 'salary expectation'] },
     { id: 'references', patterns: ['reference', 'references', 'supervisor', 'recommendation', 'who can i contact about him'] },
     { id: 'availability', patterns: ['start date', 'when can he start', 'when can start', 'how soon', 'available to start', 'join date', 'notice period'] },
@@ -253,6 +264,9 @@
     }
 
     if (bestId === 'intro' && !isIntroQuestion(normalized)) return null;
+    if (bestId === 'contact' && isPhoneQuestion(normalized) && entryMap.phone) {
+      return entryMap.phone;
+    }
     if (bestId === 'open_to_work' && scoreSemanticTopic(normalized, semanticTopics.remote_hybrid || {}) >= MIN_SEMANTIC_SCORE) {
       bestId = 'remote_hybrid';
     }
@@ -276,6 +290,9 @@
     var i, j, route, pattern;
     if (mentionsSponsorship(normalized) && normalized.indexOf('authorized') === -1) {
       if (entryMap && entryMap.sponsorship) return entryMap.sponsorship;
+    }
+    if (isPhoneQuestion(normalized) && entryMap && entryMap.phone) {
+      return entryMap.phone;
     }
     for (i = 0; i < INTENT_ROUTES.length; i++) {
       route = INTENT_ROUTES[i];
