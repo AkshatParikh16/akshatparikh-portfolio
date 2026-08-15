@@ -640,25 +640,14 @@
     return parts.join(' · ');
   }
 
-  function buildAgentToolsLine(agent) {
-    if (!agent || !agent.allowedTools || !agent.allowedTools.length) return '';
-    return 'Tools: ' + agent.allowedTools.join(', ');
-  }
-
   function applyAgentMeta() {
     var agent = knowledge && knowledge.agent ? knowledge.agent : null;
     var metaLine = buildAgentMetaLine(agent);
-    var toolsLine = buildAgentToolsLine(agent);
     var metaEls = document.querySelectorAll('.chat-agent-meta');
-    var toolsEls = document.querySelectorAll('.chat-agent-tools');
     var i;
     for (i = 0; i < metaEls.length; i++) {
       metaEls[i].textContent = metaLine;
       metaEls[i].style.display = metaLine ? '' : 'none';
-    }
-    for (i = 0; i < toolsEls.length; i++) {
-      toolsEls[i].textContent = toolsLine;
-      toolsEls[i].style.display = toolsLine ? '' : 'none';
     }
   }
 
