@@ -681,7 +681,6 @@
     }
     .chat-panel-head strong { display: block; font-size: 0.92rem; }
     .chat-panel-head span { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
-    .chat-agent-meta { font-size: 0.65rem !important; opacity: 0.85; margin-top: 0.2rem !important; }
     .chat-close {
       background: none; border: none; color: var(--text-muted);
       font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0.15rem 0.35rem;

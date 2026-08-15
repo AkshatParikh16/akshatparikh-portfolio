@@ -631,26 +631,6 @@
     return map;
   }
 
-  function buildAgentMetaLine(agent) {
-    if (!agent) return '';
-    var parts = [];
-    if (agent.version) parts.push('v' + agent.version);
-    if (agent.license) parts.push(agent.license);
-    if (agent.compatibility) parts.push(agent.compatibility);
-    return parts.join(' · ');
-  }
-
-  function applyAgentMeta() {
-    var agent = knowledge && knowledge.agent ? knowledge.agent : null;
-    var metaLine = buildAgentMetaLine(agent);
-    var metaEls = document.querySelectorAll('.chat-agent-meta');
-    var i;
-    for (i = 0; i < metaEls.length; i++) {
-      metaEls[i].textContent = metaLine;
-      metaEls[i].style.display = metaLine ? '' : 'none';
-    }
-  }
-
   function loadKnowledge() {
     return fetch('data/portfolio-knowledge.json')
       .then(function(res) {
@@ -667,7 +647,6 @@
         recruiterIntents = (data.recruiterIntents || []).slice().sort(function(a, b) {
           return (b.priority || 0) - (a.priority || 0);
         });
-        applyAgentMeta();
       })
       .catch(function() {
         knowledge = {
@@ -804,7 +783,7 @@
       '</button>' +
       '<div class="chat-panel" role="dialog" aria-label="Jack, Akshat\'s personal AI assistant">' +
         '<div class="chat-panel-head">' +
-          '<div><strong>' + BOT_NAME + '</strong><span>' + BOT_TAGLINE + '</span><span class="chat-agent-meta"></span></div>' +
+          '<div><strong>' + BOT_NAME + '</strong><span>' + BOT_TAGLINE + '</span></div>' +
           '<button type="button" class="chat-close" aria-label="Close chat">&times;</button>' +
         '</div>' +
         '<div class="chat-messages" aria-live="polite"></div>' +

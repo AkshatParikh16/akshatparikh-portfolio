@@ -1,11 +1,4 @@
 {
-  "agent": {
-    "name": "Jack",
-    "version": "2.8.2",
-    "license": "MIT",
-    "compatibility": "any-agent",
-    "allowedTools": ["Read", "Write", "Edit", "Grep", "Glob", "AskUserQuestion"]
-  },
   "recruiterIntents": [
     { "id": "sponsorship", "priority": 14, "exact": ["sponsorship", "sponsor", "visa", "h1b", "immigration"], "patterns": ["require sponsorship", "need sponsorship", "visa sponsorship", "need visa", "require visa", "need sponsor", "company sponsor"] },
     { "id": "work_authorization", "priority": 13, "exact": ["authorized", "authorization", "eligible"], "patterns": ["allowed to work", "authorized to work", "eligible to work", "work authorization", "work in usa", "work in us", "legally authorized", "right to work"] },
