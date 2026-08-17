@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact | Akshat Parikh</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Let's Connect | Akshat Parikh</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="contact" class="contact-bar-visible">
+<body data-page="contact">
 
   <div class="scroll-progress" id="scrollProgress"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
@@ -17,27 +14,26 @@
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
   <div class="grid-overlay"></div>
 
-  <nav id="navbar" class="nav-minimal">
-    <div class="nav-inner nav-inner--spread">
-      <a href="index.html" class="nav-logo">Akshat</a>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Akshat Parikh</a>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-      <ul class="nav-links nav-links--spread" id="navLinks">
-        <li><a href="projects.html" data-nav="projects">Projects</a></li>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="education.html" data-nav="education">Education</a></li>
         <li><a href="experience.html" data-nav="experience">Experience</a></li>
-        <li><a href="index.html" data-nav="home">About</a></li>
-        <li><a href="contact.html" data-nav="contact">Contact</a></li>
+        <li><a href="projects.html" data-nav="projects">Projects</a></li>
+        <li><a href="publications.html" data-nav="publications">Publications</a></li>
+        <li><a href="chat.html" data-nav="chat">Ask Jack</a></li>
+        <li><a href="contact.html" data-nav="contact">Let's Connect</a></li>
       </ul>
+      <a href="resume.html" class="nav-resume" data-nav="resume">Resume</a>
     </div>
   </nav>
 
   <main>
-    <header class="page-hero reveal">
-      <h1 class="page-hero__title">Contact</h1>
-      <p class="page-hero__subtitle">Reach out for roles, collaborations, or questions.</p>
-      <div class="page-hero__rule"></div>
-    </header>
-    <div class="page-content">
     <section id="contact">
+      <h2 class="section-heading caps reveal">Let's Connect</h2>
+      <p class="contact-lead reveal">Open to connecting, collaborating, or just talking about AI and Data Science.</p>
       <div class="contact-grid">
         <a href="mailto:akshat.sparikh@gmail.com" class="contact-tile card-box reveal" data-copy="akshat.sparikh@gmail.com" data-copy-label="Email copied">
           <span class="tile-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
@@ -71,18 +67,9 @@
         </a>
       </div>
     </section>
-    </div>
   </main>
 
-  <footer>
-    <p>&copy; 2026 Akshat Parikh</p>
-    <nav class="footer-links" aria-label="Secondary">
-      <a href="education.html">Education</a>
-      <a href="publications.html">Publications</a>
-      <a href="resume.html">Resume</a>
-      <a href="chat.html">Ask Jack</a>
-    </nav>
-  </footer>
+  <footer><p>&copy; 2026 Akshat Parikh</p></footer>
 
   <div class="contact-bar">
     <div class="contact-bar-inner">
@@ -104,10 +91,7 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/motion.js?v=1"></script>
-  <script src="js/chat-agent.js?v=12"></script>
+  <script src="js/chat-agent.js?v=11"></script>
 </body>
 </html>

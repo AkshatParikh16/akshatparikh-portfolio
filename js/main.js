@@ -5,9 +5,8 @@
   var currentPage = document.body.getAttribute('data-page');
   if (currentPage === 'home') {
     document.querySelector('.nav-logo')?.classList.add('active');
-    document.querySelector('.nav-links a[data-nav="home"]')?.classList.add('active');
   }
-  document.querySelectorAll('.nav-links a[data-nav]').forEach(function(link) {
+  document.querySelectorAll('.nav-links a[data-nav], .nav-resume[data-nav]').forEach(function(link) {
     if (link.getAttribute('data-nav') === currentPage) {
       link.classList.add('active');
     }
@@ -16,13 +15,16 @@
   /* Mobile nav */
   var navToggle = document.getElementById('navToggle');
   var navLinks = document.getElementById('navLinks');
+  var navResume = document.querySelector('.nav-resume');
   if (navToggle && navLinks) {
     navToggle.addEventListener('click', function() {
       navLinks.classList.toggle('open');
+      if (navResume) navResume.classList.toggle('mobile-show');
     });
     navLinks.querySelectorAll('a').forEach(function(link) {
       link.addEventListener('click', function() {
         navLinks.classList.remove('open');
+        if (navResume) navResume.classList.remove('mobile-show');
       });
     });
   }
@@ -97,8 +99,8 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* Reveal on scroll (fallback when GSAP unavailable) */
-  if (!reducedMotion && typeof gsap === 'undefined') {
+  /* Reveal on scroll */
+  if (!reducedMotion) {
     var revealObserver = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
@@ -108,7 +110,7 @@
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
     document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
-  } else if (reducedMotion || typeof gsap === 'undefined') {
+  } else {
     document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
   }
 
@@ -174,8 +176,8 @@
     });
   });
 
-  /* Particles (skip on home — WebGL hero scene) */
-  if (!reducedMotion && currentPage !== 'home') {
+  /* Particles */
+  if (!reducedMotion) {
     var canvas = document.getElementById('particleCanvas');
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
