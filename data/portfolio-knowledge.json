@@ -47,7 +47,7 @@
       "paraphrases": ["github url", "his github", "code portfolio"]
     },
     "location": {
-      "terms": ["location", "address", "based", "city", "san jose", "bay area"],
+      "terms": ["location", "address", "based", "city", "san jose"],
       "paraphrases": ["where is he", "where located", "where is he based", "which city"]
     },
     "email": {
@@ -244,10 +244,10 @@
       "id": "location",
       "priority": 11,
       "answerStyle": "direct",
-      "keywords": ["location", "address", "based", "city", "san jose", "bay area"],
+      "keywords": ["location", "address", "based", "city", "san jose"],
       "phrases": ["where is he", "where located", "where is he based", "which city"],
-      "text": "location San Jose California Bay Area based address",
-      "answer": "San Jose, CA (Bay Area)."
+      "text": "location San Jose California based address",
+      "answer": "San Jose, CA."
     },
     {
       "id": "contact",
@@ -306,16 +306,16 @@
       "priority": 9,
       "keywords": ["open", "looking", "opportunities", "hiring", "interested", "collaborate", "roles", "position", "job search"],
       "phrases": ["open to work", "open to opportunities", "looking for work", "looking for role"],
-      "text": "open connecting collaborating AI Data Science opportunities Bay Area graduate",
+      "text": "open connecting collaborating AI Data Science opportunities graduate",
       "answer": "Yes. He is open to roles in AI and data science. For specifics, email akshat.sparikh@gmail.com or call (408) 637-9861."
     },
     {
       "id": "intro",
       "priority": 1,
-      "keywords": ["introduce", "introduction", "background", "overview", "graduate", "bay area"],
+      "keywords": ["introduce", "introduction", "background", "overview", "graduate"],
       "phrases": ["who is akshat", "who is he", "tell me about akshat", "about akshat", "tell me about him"],
-      "text": "Akshat Parikh Data Scientist ML Engineer MS graduate Data Science AI Bay Area software engineering machine learning generative AI agentic AI data engineering",
-      "answer": "Akshat Parikh. MS in Data Science and AI (May 2026), Bay Area.\n\nHe has done work in software engineering, ML, GenAI, agentic AI, and data engineering.\n\nAsk about experience, projects, or skills if you want more detail."
+      "text": "Akshat Parikh Data Scientist ML Engineer MS graduate Data Science AI software engineering machine learning generative AI agentic AI data engineering",
+      "answer": "Akshat Parikh. MS in Data Science and AI (May 2026).\n\nHe has done work in software engineering, ML, GenAI, agentic AI, and data engineering.\n\nAsk about experience, projects, or skills if you want more detail."
     },
     {
       "id": "education",
@@ -462,8 +462,8 @@
       "priority": 8,
       "keywords": ["resume", "cv", "curriculum vitae", "download resume", "pdf"],
       "phrases": ["download resume", "view resume"],
-      "text": "resume CV download PDF resume page",
-      "answer": "Akshat's resume is on the Resume page (resume.html). You can view and download the PDF there."
+      "text": "resume CV download PDF",
+      "answer": "Akshat's resume isn't on the portfolio right now. Email akshat.sparikh@gmail.com if you'd like a copy."
     },
     {
       "id": "production_deployment",

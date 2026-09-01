@@ -6,7 +6,7 @@
   if (currentPage === 'home') {
     document.querySelector('.nav-logo')?.classList.add('active');
   }
-  document.querySelectorAll('.nav-links a[data-nav], .nav-resume[data-nav]').forEach(function(link) {
+  document.querySelectorAll('.nav-links a[data-nav]').forEach(function(link) {
     if (link.getAttribute('data-nav') === currentPage) {
       link.classList.add('active');
     }
@@ -15,16 +15,13 @@
   /* Mobile nav */
   var navToggle = document.getElementById('navToggle');
   var navLinks = document.getElementById('navLinks');
-  var navResume = document.querySelector('.nav-resume');
   if (navToggle && navLinks) {
     navToggle.addEventListener('click', function() {
       navLinks.classList.toggle('open');
-      if (navResume) navResume.classList.toggle('mobile-show');
     });
     navLinks.querySelectorAll('a').forEach(function(link) {
       link.addEventListener('click', function() {
         navLinks.classList.remove('open');
-        if (navResume) navResume.classList.remove('mobile-show');
       });
     });
   }

@@ -446,7 +446,7 @@ const tests = [
   { q: 'Remote?', expectId: 'remote_hybrid', expectSnippet: 'Remote, hybrid' },
   { q: 'References?', expectId: 'references', expectSnippet: 'David Powers' },
   { q: 'Start?', expectId: 'availability', expectSnippet: 'immediately' },
-  { q: 'Resume?', expectId: 'resume', expectSnippet: 'resume' },
+  { q: 'Resume?', expectId: 'resume', expectSnippet: "isn't on the portfolio" },
   { q: 'Experience?', expectId: 'experience_overview', expectSnippet: 'four roles' },
   { q: 'Will akshat require sponsorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'will akshat require spnorship?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
