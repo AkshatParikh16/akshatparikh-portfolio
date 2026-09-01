@@ -436,9 +436,9 @@ function findAnswer(question, context) {
 const tests = [
   { q: 'Call?', expectId: 'phone', expectSnippet: '(408) 637-9861' },
   { q: 'Email?', expectId: 'email', expectSnippet: 'akshat.sparikh@gmail.com' },
-  { q: 'LinkedIn?', expectId: 'linkedin', expectSnippet: 'linkedin.com/in/akshatp2002' },
+  { q: 'LinkedIn?', expectId: 'linkedin', expectSnippet: 'linkedin.com/in/parikhakshat' },
   { q: 'GitHub?', expectId: 'github', expectSnippet: 'github.com/AkshatParikh16' },
-  { q: 'Location?', expectId: 'location', expectSnippet: 'San Jose' },
+  { q: 'Location?', expectId: 'location', expectSnippet: "doesn't list a location" },
   { q: 'Contact?', expectId: 'contact', expectSnippet: 'akshat.sparikh@gmail.com' },
   { q: 'Visa?', expectId: 'sponsorship', expectSnippet: 'sponsorship' },
   { q: 'Authorized?', expectId: 'work_authorization', expectSnippet: 'authorized to work' },

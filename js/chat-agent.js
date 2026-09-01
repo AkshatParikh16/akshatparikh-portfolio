@@ -654,7 +654,7 @@
             id: 'contact',
             priority: 10,
             keywords: ['contact', 'email', 'phone'],
-            answer: "Reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861. He is based in San Jose, CA."
+            answer: "Reach Akshat at akshat.sparikh@gmail.com or (408) 637-9861."
           }]
         };
         entryMap = buildEntryMap(knowledge);

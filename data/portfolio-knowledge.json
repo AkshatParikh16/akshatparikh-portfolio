@@ -228,8 +228,8 @@
       "answerStyle": "direct",
       "keywords": ["linkedin", "linkedin profile"],
       "phrases": ["linkedin url", "his linkedin", "linkedin page"],
-      "text": "linkedin profile linkedin.com/in/akshatp2002",
-      "answer": "linkedin.com/in/akshatp2002"
+      "text": "linkedin profile linkedin.com/in/parikhakshat",
+      "answer": "linkedin.com/in/parikhakshat"
     },
     {
       "id": "github",
@@ -246,8 +246,8 @@
       "answerStyle": "direct",
       "keywords": ["location", "address", "based", "city", "san jose"],
       "phrases": ["where is he", "where located", "where is he based", "which city"],
-      "text": "location San Jose California based address",
-      "answer": "San Jose, CA."
+      "text": "location based address city",
+      "answer": "Akshat doesn't list a location on his portfolio right now."
     },
     {
       "id": "contact",
@@ -256,7 +256,7 @@
       "keywords": ["contact", "reach", "connect", "touch"],
       "phrases": ["get in touch", "reach him", "contact him", "how to contact", "reach out"],
       "text": "contact reach connect touch hiring recruiter",
-      "answer": "Reach Akshat here:\n\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861\n• LinkedIn: linkedin.com/in/akshatp2002\n• GitHub: github.com/AkshatParikh16\n• Location: San Jose, CA"
+      "answer": "Reach Akshat here:\n\n• Email: akshat.sparikh@gmail.com\n• Phone: (408) 637-9861\n• LinkedIn: linkedin.com/in/parikhakshat\n• GitHub: github.com/AkshatParikh16"
     },
     {
       "id": "salary",
